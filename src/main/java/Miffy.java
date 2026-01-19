@@ -1,11 +1,9 @@
 import java.util.Scanner;
 
 public class Miffy {
-    private String[] strArray = new String[100];
-    private int index = 0;
 
     public static void main(String[] args) {
-        Miffy chatbot = new Miffy();
+        TaskList taskList = new TaskList();
 
         Scanner myScanner = new Scanner(System.in);
         String userInput;
@@ -24,15 +22,12 @@ public class Miffy {
                 System.out.println("  ____________________________________________________________");
                 break;
             } else if (userInput.equals("list")) {
-                for (int i = 0; i < chatbot.index; i++) {
-                    System.out.println("  " + (i + 1) + ". " + chatbot.strArray[i]);
-                }
+                taskList.list();
                 System.out.println("  ____________________________________________________________");
                 continue;
             }
 
-            chatbot.strArray[chatbot.index] = userInput;
-            chatbot.index++;
+            taskList.add(userInput);
             System.out.println("  added: " + userInput);
             System.out.println("  ____________________________________________________________");
         }
