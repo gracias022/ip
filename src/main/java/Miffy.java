@@ -41,6 +41,8 @@ public class Miffy {
                     miffy.addDeadline(userInput);
                 } else if (userInput.equals("event") || userInput.startsWith("event ")) {
                     miffy.addEvent(userInput);
+                } else if (userInput.equals("delete") || userInput.startsWith("delete ")) {
+                    miffy.handleDelete(userInput);
                 } else {
                     throw new MiffyException("Sorry, I don't know what that means :( ");
                 }
@@ -48,6 +50,22 @@ public class Miffy {
                 System.out.println("  " + e.getMessage());
                 delimiter();
             }
+        }
+    }
+
+    private void handleDelete(String input) throws MiffyException {
+        if (input.trim().equals("delete")) {
+            throw new MiffyException("Please specify which task to delete. Usage: delete <index>");
+        }
+
+        try {
+            int index = Integer.parseInt(input.substring(7));
+            Task task = taskList.deleteTask(index); // 1-based index
+            this.printOpsConfirmation(task, "Noted. I've removed");
+        } catch (NumberFormatException e) {
+            throw new MiffyException("Please enter a valid task number. Usage: 'delete <index>'");
+        } catch (IndexOutOfBoundsException e) {
+            throw new MiffyException("Oops! That task number doesn’t exist.");
         }
     }
 
@@ -93,7 +111,7 @@ public class Miffy {
         }
         Todo task = new Todo(input.substring(5));
         taskList.add(task);
-        this.printAddConfirmation(task);
+        this.printOpsConfirmation(task, "Got it. I've added");
     }
 
     private void addDeadline(String input) throws MiffyException {
@@ -108,7 +126,7 @@ public class Miffy {
         }
         Deadline task = new Deadline(arr[0], arr[1]);
         taskList.add(task);
-        this.printAddConfirmation(task);
+        this.printOpsConfirmation(task, "Got it. I've added");
     }
 
     private void addEvent(String input) throws MiffyException {
@@ -131,15 +149,15 @@ public class Miffy {
 
         Event task = new Event(desc, from, to);
         taskList.add(task);
-        this.printAddConfirmation(task);
+        this.printOpsConfirmation(task, "Got it. I've added");
     }
 
-    private void printAddConfirmation(Task t) {
-        System.out.println("  Got it. I've added this task:");
+    private void printOpsConfirmation(Task t, String action) {
+        System.out.println("  " + action + " this task:");
         System.out.println("  " + t);
         int numTasks = taskList.getTaskCount();
         System.out.printf("  Now you have %d %s in the list.\n", numTasks,
-                numTasks > 1 ? "tasks" : "task" );
+                numTasks != 1 ? "tasks" : "task" );
         delimiter();
     }
 

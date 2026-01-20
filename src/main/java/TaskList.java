@@ -1,47 +1,53 @@
+import java.util.ArrayList;
+
 public class TaskList {
-    private Task[] tasks = new Task[100];
-    private int taskCount = 0;
+    private ArrayList<Task> tasks = new ArrayList<>();
 
     public void add(Task t) {
-        if (taskCount < 100) {
-            tasks[taskCount] = t;
-            taskCount++;
-        }
+        tasks.add(t);
     }
 
     public void list() {
-        if (taskCount == 0) {
+        if (tasks.isEmpty()) {
             System.out.println("  No tasks yet. Add one now!");
             return;
         }
 
         System.out.println("  Here are the tasks in your list:");
-        for (int i = 0; i < taskCount; i++) {
-            System.out.println("  " + (i + 1) + ". " + tasks[i]);
+        for (int i = 0; i < tasks.size(); i++) {
+            System.out.println("  " + (i + 1) + ". " + tasks.get(i));
         }
     }
 
     public Task markAsDone(int index) throws IndexOutOfBoundsException {
-        index--;
-        if (index < 0 || index >= taskCount) {
-            throw new IndexOutOfBoundsException();
-        }
-        Task task = tasks[index];
+        int zeroBasedIndex = getZeroBasedIndex(index);
+        Task task = tasks.get(zeroBasedIndex);
         task.markAsDone();
         return task;
     }
 
     public Task unmark(int index) throws IndexOutOfBoundsException {
-        index--;
-        if (index < 0 || index >= taskCount) {
-            throw new IndexOutOfBoundsException();
-        }
-        Task task = tasks[index];
+        int zeroBasedIndex = getZeroBasedIndex(index);
+        Task task = tasks.get(zeroBasedIndex);
         task.unmark();
         return task;
     }
 
+    public Task deleteTask(int index) throws IndexOutOfBoundsException {
+        int zeroBasedIndex = getZeroBasedIndex(index);
+        Task t = tasks.get(zeroBasedIndex);
+        tasks.remove(zeroBasedIndex);
+        return t;
+    }
+
     public int getTaskCount() {
-        return taskCount;
+        return tasks.size();
+    }
+
+    private int getZeroBasedIndex(int index) throws IndexOutOfBoundsException {
+        if (index < 1 || index > tasks.size()) {
+            throw new IndexOutOfBoundsException();
+        }
+        return index - 1;
     }
 }
