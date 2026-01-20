@@ -40,4 +40,8 @@ public class TaskList {
         task.unmark();
         return task;
     }
+
+    public int getTaskCount() {
+        return taskCount;
+    }
 }
