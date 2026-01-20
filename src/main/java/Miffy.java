@@ -99,7 +99,7 @@ public class Miffy {
     private void addDeadline(String input) throws MiffyException {
         if (input.trim().equals("deadline")) {
             throw new MiffyException("Oops, the description and ending date/time of a deadline cannot be empty!\n" +
-                    "Usage: deadline <desc> /by <date/time>");
+                    "  Usage: deadline <desc> /by <date/time>");
         }
 
         String[] arr = input.substring(9).split(" /by ");
@@ -114,7 +114,7 @@ public class Miffy {
     private void addEvent(String input) throws MiffyException {
         if (input.trim().equals("event")) {
             throw new MiffyException("Oops, the event description, start date/time and end date/time cannot be empty!\n" +
-                    "Usage: event <desc> /from <start> /to <end>");
+                    "  Usage: event <desc> /from <start> /to <end>");
         }
         int div1 = input.indexOf(" /from ");
         int div2 = input.indexOf(" /to ");
