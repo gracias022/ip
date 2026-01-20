@@ -11,4 +11,9 @@ mark 9
 unmark 9
 mark 4 5
 unmark 4 5
+mark
+unmark
+todo
+event
+deadline
 bye
