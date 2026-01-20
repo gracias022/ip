@@ -104,7 +104,9 @@ public class Miffy {
     private static void printAddConfirmation(Task t, TaskList tl) {
         System.out.println("  Got it. I've added this task:");
         System.out.println("  " + t);
-        System.out.printf("  Now you have %d tasks in the list.\n", tl.getTaskCount());
+        int numTasks = tl.getTaskCount();
+        System.out.printf("  Now you have %d %s in the list.\n", numTasks,
+                numTasks > 1 ? "tasks" : "task" );
         delimiter();
     }
 
