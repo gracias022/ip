@@ -1,19 +1,50 @@
+# Setup: Create a few tasks
 todo borrow book
-list
-deadline return book /by Sunday
-event project meeting /from Mon 2pm /to 4pm
 deadline do homework /by no idea :-p
+event project meeting /from Mon 2pm /to 4pm
 list
+
+# Tests for valid marking and unmarking
 mark 1
 list
 unmark 1
+
+# Tests for invalid task number
 mark 9
 unmark 9
-mark 4 5
-unmark 4 5
+delete 9
+
+# Tests for invalid argument count
 mark
 unmark
+delete
+mark 4 5
+unmark 4 5
+delete 4 5
+list all
+bye bye
+
+# Tests for invalid task formats
 todo
 event
 deadline
+deadline /by
+deadline Desc /by
+event /from 1pm /to 2pm
+event Desc /from /to 2pm
+
+# Tests for parsing edge cases (extra whitespaces)
+todo   task D with extra spaces
+deadline   task E   /by   next week
+event   task F   /from   Sat   /to   Sun
+list
+
+# Cleanup and exit
+delete 1
+delete 1
+delete 1
+delete 1
+delete 1
+delete 1
+list
 bye
