@@ -20,31 +20,47 @@ public class Miffy {
 
         while (true) {
             try {
-                userInput = miffy.scanner.nextLine();
+                userInput = miffy.scanner.nextLine().trim();
                 delimiter();
 
-                if (userInput.equals("bye")) {
+                Command command = Command.fromInput(userInput);
+
+                switch (command) {
+                case BYE:
+                    if (!userInput.equalsIgnoreCase("bye")) {
+                        throw new MiffyException("Oops! Usage: bye");
+                    }
                     System.out.println("  Bye. Hope to see you again soon!");
                     delimiter();
                     miffy.scanner.close();
-                    break;
-                } else if (userInput.equals("list")) {
+                    return; // exit main()
+                case LIST:
+                    if (!userInput.equalsIgnoreCase("list")) {
+                        throw new MiffyException("Oops! Usage: list");
+                    }
                     miffy.taskList.list();
                     delimiter();
-                } else if (userInput.equals("mark") || userInput.startsWith("mark ")) {
+                    break;
+                case MARK:
                     miffy.handleMark(userInput);
-                } else if (userInput.equals("unmark") || userInput.startsWith("unmark ")) {
+                    break;
+                case UNMARK:
                     miffy.handleUnmark(userInput);
-                } else if (userInput.equals("todo") || userInput.startsWith("todo ")) {
+                    break;
+                case TODO:
                     miffy.addTodo(userInput);
-                } else if (userInput.equals("deadline") || userInput.startsWith("deadline ")) {
+                    break;
+                case DEADLINE:
                     miffy.addDeadline(userInput);
-                } else if (userInput.equals("event") || userInput.startsWith("event ")) {
+                    break;
+                case EVENT:
                     miffy.addEvent(userInput);
-                } else if (userInput.equals("delete") || userInput.startsWith("delete ")) {
+                    break;
+                case DELETE:
                     miffy.handleDelete(userInput);
-                } else {
-                    throw new MiffyException("Sorry, I don't know what that means :( ");
+                    break;
+                default:
+                    throw new MiffyException("Sorry, I don't know what that means :(");
                 }
             } catch (MiffyException e) {
                 System.out.println("  " + e.getMessage());
@@ -54,12 +70,18 @@ public class Miffy {
     }
 
     private void handleDelete(String input) throws MiffyException {
-        if (input.trim().equals("delete")) {
+        String[] parts = input.split("\\s+");
+
+        if (parts.length == 1) {
             throw new MiffyException("Please specify which task to delete. Usage: delete <index>");
         }
 
+        if (parts.length > 2) {
+            throw new MiffyException("Oops! One task at a time please -_- Usage: delete <index>");
+        }
+
         try {
-            int index = Integer.parseInt(input.substring(7));
+            int index = Integer.parseInt(parts[1]);
             Task task = taskList.deleteTask(index); // 1-based index
             this.printOpsConfirmation(task, "Noted. I've removed");
         } catch (NumberFormatException e) {
@@ -70,12 +92,18 @@ public class Miffy {
     }
 
     private void handleMark(String input) throws MiffyException {
-        if (input.equals("mark")) {
+        String[] parts = input.split("\\s+");
+
+        if (parts.length == 1) {
             throw new MiffyException("Please specify which task to mark. Usage: mark <index>");
         }
 
+        if (parts.length > 2) {
+            throw new MiffyException("Oops! One task at a time please -_- Usage: mark <index>");
+        }
+
         try {
-            int index = Integer.parseInt(input.substring(5));
+            int index = Integer.parseInt(parts[1]);
             Task task = taskList.markAsDone(index); // 1-based index
             System.out.println("  Nice! I've marked this task as done:");
             System.out.println("  " + task);
@@ -88,12 +116,18 @@ public class Miffy {
     }
 
     private void handleUnmark(String input) throws MiffyException {
-        if (input.equals("unmark")) {
+        String[] parts = input.split("\\s+");
+
+        if (parts.length == 1) {
             throw new MiffyException("Please specify which task to unmark. Usage: unmark <index>");
         }
 
+        if (parts.length > 2) {
+            throw new MiffyException("Oops! One task at a time please -_- Usage: unmark <index>");
+        }
+
         try {
-            int index = Integer.parseInt(input.substring(7));
+            int index = Integer.parseInt(parts[1]);
             Task task = taskList.unmark(index);
             System.out.println("  OK, I've marked this task as not done yet:");
             System.out.println("  " + task);
@@ -106,42 +140,52 @@ public class Miffy {
     }
 
     private void addTodo(String input) throws MiffyException {
-        if (input.trim().equals("todo")) {
+        if (input.equalsIgnoreCase("todo")) {
             throw new MiffyException("Oops, the description of a todo cannot be empty!");
         }
-        Todo task = new Todo(input.substring(5));
+
+        // remove "todo " prefix
+        String desc = input.replaceFirst("(?i)^todo\\s*", "");
+
+        Todo task = new Todo(desc);
         taskList.add(task);
         this.printOpsConfirmation(task, "Got it. I've added");
     }
 
     private void addDeadline(String input) throws MiffyException {
-        if (input.trim().equals("deadline")) {
+        if (input.equalsIgnoreCase("deadline")) {
             throw new MiffyException("Oops, the description and ending date/time of a deadline cannot be empty!\n" +
                     "  Usage: deadline <desc> /by <date/time>");
         }
 
-        String[] arr = input.substring(9).split(" /by ");
-        if (arr.length != 2 || arr[0].isBlank() || arr[1].isBlank()) {
+        String details = input.replaceFirst("(?i)^deadline\\s*", "");
+        String[] parts = details.split("\\s+/by\\s+");
+
+        if (parts.length != 2 || parts[0].isBlank() || parts[1].isBlank()) {
             throw new MiffyException("Invalid input format! Usage: deadline <desc> /by <date/time>");
         }
-        Deadline task = new Deadline(arr[0], arr[1]);
+
+        Deadline task = new Deadline(parts[0], parts[1]);
         taskList.add(task);
         this.printOpsConfirmation(task, "Got it. I've added");
     }
 
     private void addEvent(String input) throws MiffyException {
-        if (input.trim().equals("event")) {
+        if (input.equalsIgnoreCase("event")) {
             throw new MiffyException("Oops, the event description, start date/time and end date/time cannot be empty!\n" +
                     "  Usage: event <desc> /from <start> /to <end>");
         }
-        int div1 = input.indexOf(" /from ");
-        int div2 = input.indexOf(" /to ");
-        if (div1 == -1 || div2 == -1 || div1 + 7 > div2) { // e.g. error case: event ski /from /to 12pm, div1 = 9, div2 = 15
+
+        String details = input.replaceFirst("(?i)^event\\s*", "");
+        String[] parts = details.split("\\s+/from\\s+|\\s+/to\\s+");
+
+        if (parts.length < 3) {
             throw new MiffyException("Invalid input format! Usage: event <desc> /from <start> /to <end>");
         }
-        String desc = input.substring(6, div1);
-        String from = input.substring(div1 + 7, div2);
-        String to = input.substring(div2 + 5);
+
+        String desc = parts[0];
+        String from = parts[1];
+        String to = parts[2];
 
         if (desc.isEmpty() || from.isEmpty() || to.isEmpty()) {
             throw new MiffyException("Oops, the event description, start date/time and end date/time cannot be empty!");
@@ -157,7 +201,7 @@ public class Miffy {
         System.out.println("  " + t);
         int numTasks = taskList.getTaskCount();
         System.out.printf("  Now you have %d %s in the list.\n", numTasks,
-                numTasks != 1 ? "tasks" : "task" );
+                numTasks != 1 ? "tasks" : "task");
         delimiter();
     }
 
