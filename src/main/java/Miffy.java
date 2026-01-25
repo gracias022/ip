@@ -1,3 +1,6 @@
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class Miffy {
@@ -5,6 +8,8 @@ public class Miffy {
     private TaskList taskList;
     private Scanner scanner;
     private static final String FILE_PATH = "./data/miffy.txt";
+    public static final DateTimeFormatter INPUT_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
 
     public Miffy(String filePath) {
         storage = new Storage(filePath);
@@ -168,33 +173,40 @@ public class Miffy {
     private void addDeadline(String input) throws MiffyException {
         if (input.equalsIgnoreCase("deadline")) {
             throw new MiffyException("Oops, the description and ending date/time of a deadline cannot be empty!\n" +
-                    "  Usage: deadline <desc> /by <date/time>");
+                    "  Usage: deadline <desc> /by <yyyy-MM-dd HHmm>\n"
+                            + "E.g. deadline return book /by 2026-01-16 1800");
         }
 
         String details = input.replaceFirst("(?i)^deadline\\s*", "");
         String[] parts = details.split("\\s+/by\\s+");
 
         if (parts.length != 2 || parts[0].isBlank() || parts[1].isBlank()) {
-            throw new MiffyException("Invalid input format! Usage: deadline <desc> /by <date/time>");
+            throw new MiffyException("Invalid input format! Usage: deadline <desc> /by <yyyy-MM-dd HHmm>\n"
+                    + "E.g. deadline return book /by 2026-01-16 1800");
         }
 
-        Deadline task = new Deadline(parts[0], parts[1]);
-        taskList.add(task);
-        storage.save(taskList.getAllTasks());
-        this.printOpsConfirmation(task, "Got it. I've added");
+        try {
+            LocalDateTime dateTime = LocalDateTime.parse(parts[1], INPUT_FORMATTER);
+            Deadline task = new Deadline(parts[0], dateTime);
+            taskList.add(task);
+            storage.save(taskList.getAllTasks());
+            this.printOpsConfirmation(task, "Got it. I've added");
+        } catch (DateTimeParseException e) {
+            throw new MiffyException("Invalid date format! Please use yyyy-MM-dd HHmm (e.g. 2026-01-16 1800");
+        }
     }
 
     private void addEvent(String input) throws MiffyException {
         if (input.equalsIgnoreCase("event")) {
             throw new MiffyException("Oops, the event description, start date/time and end date/time cannot be empty!\n" +
-                    "  Usage: event <desc> /from <start> /to <end>");
+                    "  Usage: event <desc> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>");
         }
 
         String details = input.replaceFirst("(?i)^event\\s*", "");
         String[] parts = details.split("\\s+/from\\s+|\\s+/to\\s+");
 
         if (parts.length < 3) {
-            throw new MiffyException("Invalid input format! Usage: event <desc> /from <start> /to <end>");
+            throw new MiffyException("Invalid input format! Usage: event <desc> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>");
         }
 
         String desc = parts[0];
@@ -205,10 +217,17 @@ public class Miffy {
             throw new MiffyException("Oops, the event description, start date/time and end date/time cannot be empty!");
         }
 
-        Event task = new Event(desc, from, to);
-        taskList.add(task);
-        storage.save(taskList.getAllTasks());
-        this.printOpsConfirmation(task, "Got it. I've added");
+        try {
+            LocalDateTime fromDate = LocalDateTime.parse(from, INPUT_FORMATTER);
+            LocalDateTime toDate = LocalDateTime.parse(to, INPUT_FORMATTER);
+
+            Event task = new Event(desc, fromDate, toDate);
+            taskList.add(task);
+            storage.save(taskList.getAllTasks());
+            this.printOpsConfirmation(task, "Got it. I've added");
+        } catch (DateTimeParseException e) {
+            throw new MiffyException("Invalid date format! Please use yyyy-MM-dd HHmm (e.g. 2026-01-16 1800");
+        }
     }
 
     private void printOpsConfirmation(Task t, String action) {
