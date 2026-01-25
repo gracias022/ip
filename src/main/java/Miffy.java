@@ -1,24 +1,27 @@
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Scanner;
 
 public class Miffy {
+
     private Storage storage;
     private TaskList taskList;
-    private Scanner scanner;
+    private Ui ui;
+
     private static final String FILE_PATH = "./data/miffy.txt";
+
+    /** Formatter for parsing date-time input in 24-hour format. */
     public static final DateTimeFormatter INPUT_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
 
     public Miffy(String filePath) {
         storage = new Storage(filePath);
-        scanner = new Scanner(System.in);
+        ui = new Ui();
 
         try {
             taskList = new TaskList(storage.load());
         } catch (MiffyException e) {
-            System.out.println("Uh oh, something went wrong: " + e.getMessage());
+            ui.showLoadingError();
             taskList = new TaskList();
         }
     }
@@ -27,33 +30,28 @@ public class Miffy {
         Miffy miffy = new Miffy(FILE_PATH);
         String userInput;
 
-        delimiter();
-        System.out.println("  Hello! I'm Miffy ^_^");
-        System.out.println("  What can I do for you?");
-        delimiter();
+        miffy.ui.showWelcome();
 
         while (true) {
             try {
-                userInput = miffy.scanner.nextLine().trim();
-                delimiter();
+                userInput = miffy.ui.readCommand();
+                miffy.ui.showLine();
 
-                Command command = Command.fromInput(userInput);
+                Command command = Command.convertInputToCommand(userInput);
 
                 switch (command) {
                 case BYE:
                     if (!userInput.equalsIgnoreCase("bye")) {
                         throw new MiffyException("Oops! Usage: bye");
                     }
-                    System.out.println("  Bye. Hope to see you again soon!");
-                    delimiter();
-                    miffy.scanner.close();
+                    miffy.ui.showGoodbye();
+                    miffy.ui.closeScanner();
                     return; // exit main()
                 case LIST:
                     if (!userInput.equalsIgnoreCase("list")) {
                         throw new MiffyException("Oops! Usage: list");
                     }
-                    miffy.taskList.list();
-                    delimiter();
+                    miffy.ui.showList(miffy.taskList.getAllTasks());
                     break;
                 case MARK:
                     miffy.handleMark(userInput);
@@ -77,8 +75,9 @@ public class Miffy {
                     throw new MiffyException("Sorry, I don't know what that means :(");
                 }
             } catch (MiffyException e) {
-                System.out.println("  " + e.getMessage());
-                delimiter();
+                miffy.ui.showError(e.getMessage());
+            } finally {
+                miffy.ui.showLine();
             }
         }
     }
@@ -98,7 +97,7 @@ public class Miffy {
             int index = Integer.parseInt(parts[1]);
             Task task = taskList.deleteTask(index); // 1-based index
             storage.save(taskList.getAllTasks());
-            this.printOpsConfirmation(task, "Noted. I've removed");
+            ui.showOpsConfirmation(task, "Noted. I've removed", taskList.getTaskCount());
         } catch (NumberFormatException e) {
             throw new MiffyException("Please enter a valid task number. Usage: 'delete <index>'");
         } catch (IndexOutOfBoundsException e) {
@@ -121,9 +120,7 @@ public class Miffy {
             int index = Integer.parseInt(parts[1]);
             Task task = taskList.markAsDone(index); // 1-based index
             storage.save(taskList.getAllTasks());
-            System.out.println("  Nice! I've marked this task as done:");
-            System.out.println("  " + task);
-            delimiter();
+            ui.showTaskStatusChanged(task);
         } catch (NumberFormatException e) {
             throw new MiffyException("Please enter a valid task number. Usage: 'mark <index>'");
         } catch (IndexOutOfBoundsException e) {
@@ -146,9 +143,7 @@ public class Miffy {
             int index = Integer.parseInt(parts[1]);
             Task task = taskList.unmark(index);
             storage.save(taskList.getAllTasks());
-            System.out.println("  OK, I've marked this task as not done yet:");
-            System.out.println("  " + task);
-            delimiter();
+            ui.showTaskStatusChanged(task);
         } catch (NumberFormatException e) {
             throw new MiffyException("Please enter a valid task number. Usage: 'unmark <index>'");
         } catch (IndexOutOfBoundsException e) {
@@ -167,7 +162,7 @@ public class Miffy {
         Todo task = new Todo(desc);
         taskList.add(task);
         storage.save(taskList.getAllTasks());
-        this.printOpsConfirmation(task, "Got it. I've added");
+        ui.showOpsConfirmation(task, "Got it. I've added", taskList.getTaskCount());
     }
 
     private void addDeadline(String input) throws MiffyException {
@@ -190,7 +185,7 @@ public class Miffy {
             Deadline task = new Deadline(parts[0], dateTime);
             taskList.add(task);
             storage.save(taskList.getAllTasks());
-            this.printOpsConfirmation(task, "Got it. I've added");
+            ui.showOpsConfirmation(task, "Got it. I've added", taskList.getTaskCount());
         } catch (DateTimeParseException e) {
             throw new MiffyException("Invalid date format! Please use yyyy-MM-dd HHmm (e.g. 2026-01-16 1800");
         }
@@ -224,22 +219,10 @@ public class Miffy {
             Event task = new Event(desc, fromDate, toDate);
             taskList.add(task);
             storage.save(taskList.getAllTasks());
-            this.printOpsConfirmation(task, "Got it. I've added");
+            ui.showOpsConfirmation(task, "Got it. I've added", taskList.getTaskCount());
         } catch (DateTimeParseException e) {
             throw new MiffyException("Invalid date format! Please use yyyy-MM-dd HHmm (e.g. 2026-01-16 1800");
         }
     }
 
-    private void printOpsConfirmation(Task t, String action) {
-        System.out.println("  " + action + " this task:");
-        System.out.println("  " + t);
-        int numTasks = taskList.getTaskCount();
-        System.out.printf("  Now you have %d %s in the list.\n", numTasks,
-                numTasks != 1 ? "tasks" : "task");
-        delimiter();
-    }
-
-    private static void delimiter() {
-        System.out.println("  ________________________________________________________________________________");
-    }
 }

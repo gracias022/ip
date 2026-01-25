@@ -19,18 +19,6 @@ public class TaskList {
         tasks.add(t);
     }
 
-    public void list() {
-        if (tasks.isEmpty()) {
-            System.out.println("  No tasks yet. Add one now!");
-            return;
-        }
-
-        System.out.println("  Here are the tasks in your list:");
-        for (int i = 0; i < tasks.size(); i++) {
-            System.out.println("  " + (i + 1) + ". " + tasks.get(i));
-        }
-    }
-
     public Task markAsDone(int index) throws IndexOutOfBoundsException {
         int zeroBasedIndex = getZeroBasedIndex(index);
         Task task = tasks.get(zeroBasedIndex);
