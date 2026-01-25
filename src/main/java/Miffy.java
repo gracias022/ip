@@ -1,16 +1,25 @@
 import java.util.Scanner;
 
 public class Miffy {
+    private Storage storage;
     private TaskList taskList;
     private Scanner scanner;
+    private static final String FILE_PATH = "./data/miffy.txt";
 
-    public Miffy() {
-        taskList = new TaskList();
+    public Miffy(String filePath) {
+        storage = new Storage(filePath);
         scanner = new Scanner(System.in);
+
+        try {
+            taskList = new TaskList(storage.load());
+        } catch (MiffyException e) {
+            System.out.println("Uh oh, something went wrong: " + e.getMessage());
+            taskList = new TaskList();
+        }
     }
 
     public static void main(String[] args) {
-        Miffy miffy = new Miffy();
+        Miffy miffy = new Miffy(FILE_PATH);
         String userInput;
 
         delimiter();
@@ -83,6 +92,7 @@ public class Miffy {
         try {
             int index = Integer.parseInt(parts[1]);
             Task task = taskList.deleteTask(index); // 1-based index
+            storage.save(taskList.getAllTasks());
             this.printOpsConfirmation(task, "Noted. I've removed");
         } catch (NumberFormatException e) {
             throw new MiffyException("Please enter a valid task number. Usage: 'delete <index>'");
@@ -105,6 +115,7 @@ public class Miffy {
         try {
             int index = Integer.parseInt(parts[1]);
             Task task = taskList.markAsDone(index); // 1-based index
+            storage.save(taskList.getAllTasks());
             System.out.println("  Nice! I've marked this task as done:");
             System.out.println("  " + task);
             delimiter();
@@ -129,6 +140,7 @@ public class Miffy {
         try {
             int index = Integer.parseInt(parts[1]);
             Task task = taskList.unmark(index);
+            storage.save(taskList.getAllTasks());
             System.out.println("  OK, I've marked this task as not done yet:");
             System.out.println("  " + task);
             delimiter();
@@ -149,6 +161,7 @@ public class Miffy {
 
         Todo task = new Todo(desc);
         taskList.add(task);
+        storage.save(taskList.getAllTasks());
         this.printOpsConfirmation(task, "Got it. I've added");
     }
 
@@ -167,6 +180,7 @@ public class Miffy {
 
         Deadline task = new Deadline(parts[0], parts[1]);
         taskList.add(task);
+        storage.save(taskList.getAllTasks());
         this.printOpsConfirmation(task, "Got it. I've added");
     }
 
@@ -193,6 +207,7 @@ public class Miffy {
 
         Event task = new Event(desc, from, to);
         taskList.add(task);
+        storage.save(taskList.getAllTasks());
         this.printOpsConfirmation(task, "Got it. I've added");
     }
 
