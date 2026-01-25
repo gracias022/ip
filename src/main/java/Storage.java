@@ -3,6 +3,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -45,7 +47,7 @@ public class Storage {
                     String line = s.nextLine();
                     try {
                         tasks.add(parseTaskFromLine(line));
-                    } catch (IllegalArgumentException e) {
+                    } catch (IllegalArgumentException | DateTimeParseException e) {
                         System.out.println("  Oops, corrupted line detected! Skipping:");
                         System.out.println("  " + line);
                     }
@@ -74,10 +76,13 @@ public class Storage {
             task = new Todo(parts[2]);
             break;
         case "D":
-            task = new Deadline(parts[2], parts[3]);
+            LocalDateTime byDate = LocalDateTime.parse(parts[3]);
+            task = new Deadline(parts[2], byDate);
             break;
         case "E":
-            task = new Event(parts[2], parts[3], parts[4]);
+            LocalDateTime fromDate = LocalDateTime.parse(parts[3]);
+            LocalDateTime toDate = LocalDateTime.parse(parts[4]);
+            task = new Event(parts[2], fromDate, toDate);
             break;
         default:
             throw new IllegalArgumentException("Unknown task type: " + taskType);
