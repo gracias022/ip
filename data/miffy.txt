@@ -1,2 +1,0 @@
-D | 1 | sth | 4pm
-E | 0 | bla | 2pm | 3pm
