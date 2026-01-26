@@ -1,3 +1,7 @@
+package miffy.command;
+
+import miffy.task.Event;
+
 import java.time.LocalDateTime;
 
 public class AddEventCommand extends AddCommand {

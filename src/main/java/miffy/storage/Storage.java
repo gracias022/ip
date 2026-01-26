@@ -1,3 +1,8 @@
+package miffy.storage;
+
+import miffy.exception.MiffyException;
+import miffy.task.*;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
