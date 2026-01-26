@@ -37,38 +37,39 @@ public class Miffy {
                 userInput = miffy.ui.readCommand();
                 miffy.ui.showLine();
 
-                Command command = Command.convertInputToCommand(userInput);
+                String[] parts = userInput.split("\\s+", 2);
+                String commandType = parts[0].toLowerCase();
 
-                switch (command) {
-                case BYE:
+                switch (commandType) {
+                case "bye":
                     if (!userInput.equalsIgnoreCase("bye")) {
                         throw new MiffyException("Oops! Usage: bye");
                     }
                     miffy.ui.showGoodbye();
                     miffy.ui.closeScanner();
                     return; // exit main()
-                case LIST:
+                case "list":
                     if (!userInput.equalsIgnoreCase("list")) {
                         throw new MiffyException("Oops! Usage: list");
                     }
                     miffy.ui.showList(miffy.taskList.getAllTasks());
                     break;
-                case MARK:
+                case "mark":
                     miffy.handleMark(userInput);
                     break;
-                case UNMARK:
+                case "unmark":
                     miffy.handleUnmark(userInput);
                     break;
-                case TODO:
+                case "todo":
                     miffy.addTodo(userInput);
                     break;
-                case DEADLINE:
+                case "deadline":
                     miffy.addDeadline(userInput);
                     break;
-                case EVENT:
+                case "event":
                     miffy.addEvent(userInput);
                     break;
-                case DELETE:
+                case "delete":
                     miffy.handleDelete(userInput);
                     break;
                 default:
@@ -167,9 +168,9 @@ public class Miffy {
 
     private void addDeadline(String input) throws MiffyException {
         if (input.equalsIgnoreCase("deadline")) {
-            throw new MiffyException("Oops, the description and ending date/time of a deadline cannot be empty!\n" +
-                    "  Usage: deadline <desc> /by <yyyy-MM-dd HHmm>\n"
-                            + "E.g. deadline return book /by 2026-01-16 1800");
+            throw new MiffyException("Oops, the description and ending date/time of a deadline cannot be empty!\n"
+                    + "  Usage: deadline <desc> /by <yyyy-MM-dd HHmm>\n"
+                            + "  E.g. deadline return book /by 2026-01-16 1800");
         }
 
         String details = input.replaceFirst("(?i)^deadline\\s*", "");
@@ -177,7 +178,7 @@ public class Miffy {
 
         if (parts.length != 2 || parts[0].isBlank() || parts[1].isBlank()) {
             throw new MiffyException("Invalid input format! Usage: deadline <desc> /by <yyyy-MM-dd HHmm>\n"
-                    + "E.g. deadline return book /by 2026-01-16 1800");
+                    + "  E.g. deadline return book /by 2026-01-16 1800");
         }
 
         try {
@@ -187,21 +188,22 @@ public class Miffy {
             storage.save(taskList.getAllTasks());
             ui.showOpsConfirmation(task, "Got it. I've added", taskList.getTaskCount());
         } catch (DateTimeParseException e) {
-            throw new MiffyException("Invalid date format! Please use yyyy-MM-dd HHmm (e.g. 2026-01-16 1800");
+            throw new MiffyException("Invalid date format! Please use yyyy-MM-dd HHmm (e.g. 2026-01-16 1800)");
         }
     }
 
     private void addEvent(String input) throws MiffyException {
         if (input.equalsIgnoreCase("event")) {
-            throw new MiffyException("Oops, the event description, start date/time and end date/time cannot be empty!\n" +
-                    "  Usage: event <desc> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>");
+            throw new MiffyException("Oops, the event description, start date/time and end date/time cannot be empty!\n"
+                    + "  Usage: event <desc> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>");
         }
 
         String details = input.replaceFirst("(?i)^event\\s*", "");
         String[] parts = details.split("\\s+/from\\s+|\\s+/to\\s+");
 
         if (parts.length < 3) {
-            throw new MiffyException("Invalid input format! Usage: event <desc> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>");
+            throw new MiffyException(
+                    "Invalid input format! Usage: event <desc> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>");
         }
 
         String desc = parts[0];
@@ -221,7 +223,7 @@ public class Miffy {
             storage.save(taskList.getAllTasks());
             ui.showOpsConfirmation(task, "Got it. I've added", taskList.getTaskCount());
         } catch (DateTimeParseException e) {
-            throw new MiffyException("Invalid date format! Please use yyyy-MM-dd HHmm (e.g. 2026-01-16 1800");
+            throw new MiffyException("Invalid date format! Please use yyyy-MM-dd HHmm (e.g. 2026-01-16 1800)");
         }
     }
 
