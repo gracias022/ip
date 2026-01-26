@@ -1,3 +1,12 @@
+package miffy;
+
+import miffy.command.Command;
+import miffy.exception.MiffyException;
+import miffy.parser.Parser;
+import miffy.storage.Storage;
+import miffy.task.TaskList;
+import miffy.ui.Ui;
+
 public class Miffy {
     private Storage storage;
     private TaskList taskList;

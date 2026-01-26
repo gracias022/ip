@@ -1,3 +1,11 @@
+package miffy.command;
+
+import miffy.exception.MiffyException;
+import miffy.storage.Storage;
+import miffy.task.Task;
+import miffy.task.TaskList;
+import miffy.ui.Ui;
+
 public class AddCommand extends Command {
     private Task task;
 

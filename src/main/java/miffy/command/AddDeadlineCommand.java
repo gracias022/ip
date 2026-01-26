@@ -1,3 +1,6 @@
+package miffy.command;
+
+import miffy.task.Deadline;
 import java.time.LocalDateTime;
 
 public class AddDeadlineCommand extends AddCommand {

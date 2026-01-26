@@ -1,3 +1,7 @@
+package miffy.ui;
+
+import miffy.task.Task;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
