@@ -26,24 +26,26 @@ public class Miffy {
         }
     }
 
-    public static void main(String[] args) {
-        Miffy miffy = new Miffy(FILE_PATH);
+    public void run() {
+        ui.showWelcome();
         boolean isExit = false;
-
-        miffy.ui.showWelcome();
 
         while (!isExit) {
             try {
-                String fullCommand = miffy.ui.readCommand();
-                miffy.ui.showLine();
-                Command command = Parser.parse(fullCommand);
-                command.execute(miffy.taskList, miffy.ui, miffy.storage);
-                isExit = command.isExit();
+                String fullCommand = ui.readCommand();
+                ui.showLine();
+                Command c = Parser.parse(fullCommand);
+                c.execute(taskList, ui, storage);
+                isExit = c.isExit();
             } catch (MiffyException e) {
-                miffy.ui.showError(e.getMessage());
+                ui.showError(e.getMessage());
             } finally {
-                miffy.ui.showLine();
+                ui.showLine();
             }
         }
+    }
+
+    public static void main(String[] args) {
+        new Miffy(FILE_PATH).run();
     }
 }

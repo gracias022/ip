@@ -32,7 +32,7 @@ public class Parser {
         case "todo":
             if (parts.length < 2 || parts[1].isBlank()) {
                 throw new MiffyException("Oops, the description of a todo cannot be empty!\n"
-                        + "  Usage: todo <desc> (e.g. todo read book)");
+                        + "Usage: todo <desc> (e.g. todo read book)");
             }
             return new AddTodoCommand(parts[1]);
         case "deadline":
