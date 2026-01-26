@@ -32,17 +32,15 @@ public class Parser {
         case "deadline":
             /* Check for "deadline", "deadline " */
             if (parts.length < 2 || parts[1].isBlank()) {
-                throw new MiffyException("Oops, the description and ending date/time of a deadline cannot be empty!\n" +
-                        "  Usage: deadline <desc> /by <yyyy-MM-dd HHmm>\n"
-                        + "  E.g. deadline return book /by 2026-01-16 1800");
+                throw new MiffyException("Oops, the description and ending date/time of a deadline cannot be empty!\n"
+                        + Ui.DEADLINE_USAGE);
             }
 
             /* Split task contents into <description> and <due date> */
             details = parts[1].split("\\s+/by\\s+");
 
             if (details.length != 2 || details[0].isBlank() || details[1].isBlank()) {
-                throw new MiffyException("Invalid input format! Usage: deadline <desc> /by <yyyy-MM-dd HHmm>\n"
-                        + "  E.g. deadline return book /by 2026-01-16 1800");
+                throw new MiffyException("Invalid input format! " + Ui.DEADLINE_USAGE);
             }
 
             try {
@@ -56,16 +54,14 @@ public class Parser {
             if (parts.length < 2 || parts[1].isBlank()) {
                 throw new MiffyException(
                         "Oops, the event description, start date/time and end date/time cannot be empty!\n"
-                                + "  Usage: event <desc> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>\n"
-                                        + "  E.g. event meeting /from 2026-01-16 1400 /to 2026-01-16 1600");
+                                + Ui.EVENT_USAGE);
             }
 
             details = parts[1].split("\\s+/from\\s+|\\s+/to\\s+");
 
             if (details.length < 3) {
                 throw new MiffyException(
-                        "Invalid input format! Usage: event <desc> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>\n"
-                                + "  E.g. event meeting /from 2026-01-16 1400 /to 2026-01-16 1600");
+                        "Invalid input format! " + Ui.EVENT_USAGE);
             }
 
             String desc = details[0];

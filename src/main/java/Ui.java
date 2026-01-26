@@ -4,6 +4,14 @@ import java.util.Scanner;
 public class Ui {
     private final Scanner scanner;
 
+    public static final String DEADLINE_USAGE =
+            "Usage: deadline <desc> /by <yyyy-MM-dd HHmm>\n" +
+                    "E.g. deadline return book /by 2026-01-16 1800";
+
+    public static final String EVENT_USAGE =
+            "Usage: event <desc> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>\n" +
+                    "E.g. event meeting /from 2026-01-16 1400 /to 2026-01-16 1600";
+
     public Ui() {
         this.scanner = new Scanner(System.in);
     }
@@ -49,8 +57,13 @@ public class Ui {
         System.out.println("We'll start fresh for now.");
     }
 
-    public void showError(String errorMsg) {
-        System.out.println("  " + errorMsg);
+    public void showError(String message) {
+        String[] lines = message.split("\n");
+
+        // Print each line with a 2-space padding
+        for (String line : lines) {
+            System.out.println("  " + line);
+        }
     }
 
     public void showOpsConfirmation(Task t, String action, int taskCount) {
