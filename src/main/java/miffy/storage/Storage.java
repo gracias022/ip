@@ -22,12 +22,18 @@ import java.util.Scanner;
 public class Storage {
     private final Path path;
 
+    /**
+     * Constructs a {@code Storage} object for a specified file path.
+     *
+     * @param filePath Path to the data file used to store tasks.
+     */
     public Storage(String filePath) {
         this.path = Paths.get(filePath);
     }
 
     /**
      * Loads tasks from a data file on disk.
+     * <p>
      * Checks if a datafile matching the specified file path exists.
      * If it does not, a new file is created and an empty list is returned.
      * Otherwise, each valid line in the file is parsed into a {@link Task} object.
@@ -66,6 +72,13 @@ public class Storage {
         }
     }
 
+    /**
+     * Parses a single line from the data file into a {@link Task} object.
+     *
+     * @param line Line from the file representing a task.
+     * @return Task object corresponding to the line.
+     * @throws IllegalArgumentException If the line is corrupted or has an unknown task type.
+     */
     public static Task parseTaskFromLine(String line) {
         String[] parts = line.split(" \\| ");
 
@@ -102,10 +115,11 @@ public class Storage {
 
     /**
      * Overwrites the data file on disk with the current list of tasks.
-     * This method is invoked whenever the {@link TaskList} changes,
+     * <p>
+     * This method should be invoked whenever the task list is modified,
      * such as when a task is added, deleted, marked or unmarked.
      *
-     * @param tasks Updated list of {@link Task} objects
+     * @param tasks List of {@link Task} objects to save.
      * @throws MiffyException If an I/O exception occurs while accessing or writing to the data file.
      */
     public void save(ArrayList<Task> tasks) throws MiffyException {
