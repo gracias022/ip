@@ -1,6 +1,15 @@
 package miffy.task;
 
+/**
+ * Represents a task without any associated date-time.
+ */
 public class Todo extends Task {
+
+    /**
+     * Creates a todo task.
+     *
+     * @param description Task description.
+     */
     public Todo(String description) {
         super(description);
     }

@@ -2,10 +2,20 @@ package miffy.task;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents an event task with a start and end date-time.
+ */
 public class Event extends Task {
     protected LocalDateTime from;
     protected LocalDateTime to;
 
+    /**
+     * Creates an event task.
+     *
+     * @param description Event description.
+     * @param from Start date-time.
+     * @param to End date-time.
+     */
     public Event(String description, LocalDateTime from, LocalDateTime to) {
         super(description);
         this.from = from;

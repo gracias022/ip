@@ -8,11 +8,35 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Parses user input strings into {@link Command} objects for execution by Miffy.
+ * <p>
+ * Handles commands including: todo, deadline, event, mark, unmark, delete, list, and bye.
+ * Also validates input formats, including checking for non-empty task descriptions
+ * and correct date-time formats.
+ */
 public class Parser {
-    /** Formatter for parsing date-time input in 24-hour format. */
+
+    /**
+     * Formatter for parsing date-time input in 24-hour format.
+     * <p>
+     * Example: 2026-01-16 1800
+    */
     public static final DateTimeFormatter INPUT_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
 
+    /**
+     * Parses a full command string entered by the user and returns the corresponding {@link Command} object.
+     * <p>
+     * Performs input validation, including
+     * command type recognition, syntax checks for all task types,
+     * date-time format validation for deadlines and events,
+     * and syntax checks for mark, unmark, and delete commands
+     *
+     * @param fullCommand Input string entered by the user, with leading and trailing whitespaces removed.
+     * @return A {@link Command} object representing the action to be performed.
+     * @throws MiffyException If the input is invalid, unknown, or contains improperly formatted data.
+     */
     public static Command parse(String fullCommand) throws MiffyException {
         String[] parts = fullCommand.split("\\s+", 2);
         String commandType = parts[0].toLowerCase();
