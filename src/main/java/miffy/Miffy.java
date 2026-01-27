@@ -7,6 +7,12 @@ import miffy.storage.Storage;
 import miffy.task.TaskList;
 import miffy.ui.Ui;
 
+/**
+ * Main application class for Miffy.
+ * <p>
+ * Handles initialization of storage, task list, and UI, and runs
+ * the main application loop to process user input.
+ */
 public class Miffy {
     private Storage storage;
     private TaskList taskList;
@@ -14,6 +20,11 @@ public class Miffy {
 
     private static final String FILE_PATH = "./data/miffy.txt";
 
+    /**
+     * Constructs a Miffy application instance with the given file path for storage.
+     *
+     * @param filePath Path to data file for storing tasks.
+     */
     public Miffy(String filePath) {
         storage = new Storage(filePath);
         ui = new Ui();
@@ -26,6 +37,11 @@ public class Miffy {
         }
     }
 
+    /**
+     * Runs the main application loop until the user exits.
+     * Prints the welcome message, reads user commands, parses and executes them,
+     * handles exceptions, and prints feedback to the user.
+     */
     public void run() {
         ui.showWelcome();
         boolean isExit = false;
@@ -45,6 +61,11 @@ public class Miffy {
         }
     }
 
+    /**
+     * Main entry point for the Miffy application.
+     *
+     * @param args Command-line arguments (ignored)
+     */
     public static void main(String[] args) {
         new Miffy(FILE_PATH).run();
     }
