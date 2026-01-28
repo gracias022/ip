@@ -1,6 +1,14 @@
 package miffy.parser;
 
-import miffy.command.*;
+import miffy.command.AddDeadlineCommand;
+import miffy.command.AddEventCommand;
+import miffy.command.AddTodoCommand;
+import miffy.command.Command;
+import miffy.command.DeleteCommand;
+import miffy.command.ExitCommand;
+import miffy.command.ListCommand;
+import miffy.command.MarkCommand;
+import miffy.command.UnmarkCommand;
 import miffy.exception.MiffyException;
 import miffy.ui.Ui;
 
