@@ -2,6 +2,7 @@ package miffy.ui;
 
 import miffy.task.Task;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -82,6 +83,23 @@ public class Ui {
                 : "OK, I've marked this as not done:";
         System.out.println("  " + message);
         System.out.println("  " + task);
+    }
+
+    /**
+     * Displays tasks whose descriptions match the given keyword.
+     *
+     * @param matches List of matching tasks.
+     */
+    public void showFindResults(ArrayList<Task> matches) {
+        if (matches.isEmpty()) {
+            System.out.println("  Oops! No matching tasks found :(");
+            return;
+        }
+
+        System.out.println("  Here are the matching tasks in your list:");
+        for (int i = 0; i < matches.size(); i++) {
+            System.out.println("  " + (i + 1) + ". " + matches.get(i));
+        }
     }
 
     public void showLine() {

@@ -8,6 +8,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Parses user input strings into {@link Command} objects for execution by Miffy.
+ * <p>
+ * Handles commands including: todo, deadline, event, mark, unmark, find, delete, list, and bye.
+ * Also validates input formats, including checking for non-empty task descriptions
+ * and correct date-time formats.
+ */
 public class Parser {
     /** Formatter for parsing date-time input in 24-hour format. */
     public static final DateTimeFormatter INPUT_FORMATTER =
@@ -110,8 +117,16 @@ public class Parser {
             } catch (NumberFormatException e) {
                 throw new MiffyException("Please enter a valid task number. Usage: %s <index>".formatted(commandType));
             }
+        case "find":
+            if (parts.length < 2 || parts[1].isBlank()) {
+                throw new MiffyException("Please enter a keyword. Usage: find <keyword>");
+            }
+
+            return new FindCommand(parts[1]);
         default:
             throw new MiffyException("Sorry, I don't know what that means :(");
         }
     }
+
+
 }
