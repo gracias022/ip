@@ -48,6 +48,16 @@ public abstract class Task {
     }
 
     /**
+     * Checks if the task description contains the given keyword.
+     *
+     * @param keyword Keyword searched for by the user.
+     * @return {@code true} if the description contains the keyword; {@code false} otherwise.
+     */
+    public boolean hasKeyword(String keyword) {
+        return description.toLowerCase().contains(keyword.toLowerCase());
+    }
+
+    /**
      * Returns a string representation of the task suitable for saving to storage.
      * Must be implemented by subclasses.
      *

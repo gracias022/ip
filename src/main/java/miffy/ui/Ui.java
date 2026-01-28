@@ -124,6 +124,23 @@ public class Ui {
     }
 
     /**
+     * Displays tasks whose descriptions match the given keyword.
+     *
+     * @param matches List of matching tasks.
+     */
+    public void showFindResults(ArrayList<Task> matches) {
+        if (matches.isEmpty()) {
+            System.out.println("  Oops! No matching tasks found :(");
+            return;
+        }
+
+        System.out.println("  Here are the matching tasks in your list:");
+        for (int i = 0; i < matches.size(); i++) {
+            System.out.println("  " + (i + 1) + ". " + matches.get(i));
+        }
+    }
+
+    /**
      * Prints a horizontal line separator.
      */
     public void showLine() {

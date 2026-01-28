@@ -6,6 +6,7 @@ import miffy.command.AddTodoCommand;
 import miffy.command.Command;
 import miffy.command.DeleteCommand;
 import miffy.command.ExitCommand;
+import miffy.command.FindCommand;
 import miffy.command.ListCommand;
 import miffy.command.MarkCommand;
 import miffy.command.UnmarkCommand;
@@ -20,6 +21,13 @@ import java.time.format.DateTimeParseException;
  * Parses user input strings into {@link Command} objects for execution by Miffy.
  * <p>
  * Handles commands including: todo, deadline, event, mark, unmark, delete, list, and bye.
+ * Also validates input formats, including checking for non-empty task descriptions
+ * and correct date-time formats.
+ */
+/**
+ * Parses user input strings into {@link Command} objects for execution by Miffy.
+ * <p>
+ * Handles commands including: todo, deadline, event, mark, unmark, find, delete, list, and bye.
  * Also validates input formats, including checking for non-empty task descriptions
  * and correct date-time formats.
  */
@@ -39,7 +47,7 @@ public class Parser {
      * Performs input validation, including
      * command type recognition, syntax checks for all task types,
      * date-time format validation for deadlines and events,
-     * and syntax checks for mark, unmark, and delete commands
+     * and syntax checks for find, mark, unmark, and delete commands
      *
      * @param fullCommand Input string entered by the user, with leading and trailing whitespaces removed.
      * @return A {@link Command} object representing the action to be performed.
@@ -142,6 +150,12 @@ public class Parser {
             } catch (NumberFormatException e) {
                 throw new MiffyException("Please enter a valid task number. Usage: %s <index>".formatted(commandType));
             }
+        case "find":
+            if (parts.length < 2 || parts[1].isBlank()) {
+                throw new MiffyException("Please enter a keyword. Usage: find <keyword>");
+            }
+
+            return new FindCommand(parts[1]);
         default:
             throw new MiffyException("Sorry, I don't know what that means :(");
         }
