@@ -14,19 +14,18 @@ import miffy.ui.Ui;
  * the main application loop to process user input.
  */
 public class Miffy {
+    private static final String FILE_PATH = "./data/miffy.txt";
+
     private Storage storage;
     private TaskList taskList;
     private Ui ui;
 
-    private static final String FILE_PATH = "./data/miffy.txt";
 
     /**
      * Constructs a Miffy application instance with the given file path for storage.
-     *
-     * @param filePath Path to data file for storing tasks.
      */
-    public Miffy(String filePath) {
-        storage = new Storage(filePath);
+    public Miffy() {
+        storage = new Storage(FILE_PATH);
         ui = new Ui();
 
         try {
@@ -67,6 +66,13 @@ public class Miffy {
      * @param args Command-line arguments (ignored)
      */
     public static void main(String[] args) {
-        new Miffy(FILE_PATH).run();
+        new Miffy().run();
+    }
+
+    /**
+     * Generates a response for the user's chat message.
+     */
+    public String getResponse(String input) {
+        return "Miffy heard: " + input;
     }
 }
