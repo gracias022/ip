@@ -48,7 +48,7 @@ test {
 }
 
 application {
-    mainClass.set("miffy.Miffy")
+    mainClass.set("miffy.Launcher")
 }
 
 shadowJar {
