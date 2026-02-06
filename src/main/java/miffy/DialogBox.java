@@ -52,15 +52,41 @@ public class DialogBox extends HBox {
         Collections.reverse(tmp);
         getChildren().setAll(tmp);
         setAlignment(Pos.TOP_LEFT);
+        dialog.getStyleClass().add("reply-label");
+    }
+
+    @SuppressWarnings("checkstyle:Regexp")
+    private void changeDialogStyle(String commandType) {
+        if (commandType == null) {
+            return;
+        }
+
+        switch(commandType) {
+        case "AddTodoCommand", "AddDeadlineCommand", "AddEventCommand":
+            dialog.getStyleClass().add("add-label");
+            break;
+        case "MarkCommand", "UnmarkCommand":
+            dialog.getStyleClass().add("marked-label");
+            break;
+        case "DeleteCommand":
+            dialog.getStyleClass().add("delete-label");
+            break;
+        case "Error":
+            dialog.getStyleClass().add("error-label");
+            break;
+        default:
+            // Do nothing
+        }
     }
 
     public static DialogBox getUserDialog(String text, Image img) {
         return new DialogBox(text, img);
     }
 
-    public static DialogBox getMiffyDialog(String text, Image img) {
+    public static DialogBox getMiffyDialog(String text, Image img, String commandType) {
         var db = new DialogBox(text, img);
         db.flip();
+        db.changeDialogStyle(commandType);
         return db;
     }
 

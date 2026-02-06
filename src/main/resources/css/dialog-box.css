@@ -28,6 +28,26 @@
     -fx-border-radius: 1em 1em 1em 0;
 }
 
+.add-label {
+    -fx-background-color: yellow;
+}
+
+.marked-label {
+    -fx-background-color: palegreen;
+}
+
+.delete-label {
+    -fx-background-color: lightpink;
+}
+
+.error-label {
+    -fx-background-color: salmon;
+}
+
+.welcome-label {
+    -fx-background-color: paleturquoise;
+}
+
 
 
 

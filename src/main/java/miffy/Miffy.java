@@ -13,12 +13,15 @@ import miffy.ui.Ui;
  * Handles initialization of storage, task list, and UI, and runs
  * the main application loop to process user input.
  */
+@SuppressWarnings("checkstyle:Regexp")
 public class Miffy {
     private static final String FILE_PATH = "./data/miffy.txt";
 
     private Storage storage;
     private TaskList taskList;
     private Ui ui;
+    private String commandType;
+    private boolean isExit;
 
 
     /**
@@ -27,6 +30,7 @@ public class Miffy {
     public Miffy() {
         storage = new Storage(FILE_PATH);
         ui = new Ui();
+        isExit = false;
 
         try {
             taskList = new TaskList(storage.load());
@@ -43,7 +47,7 @@ public class Miffy {
      */
     public void run() {
         ui.showWelcome();
-        boolean isExit = false;
+        isExit = false;
 
         while (!isExit) {
             try {
@@ -73,6 +77,33 @@ public class Miffy {
      * Generates a response for the user's chat message.
      */
     public String getResponse(String input) {
-        return "Miffy heard: " + input;
+        try {
+            Command c = Parser.parse(input);
+            c.execute(taskList, ui, storage);
+            commandType = c.getClass().getSimpleName();
+            isExit = c.isExit();
+            return ui.getLastMessage();
+        } catch (MiffyException e) {
+            commandType = "Error";
+            return "Error: " + e.getMessage();
+        }
     }
+
+    public String getCommandType() {
+        return commandType;
+    }
+
+    /**
+     * Displays the welcome message to the console and returns it for the GUI.
+     * @return the welcome message that was displayed
+     */
+    public String getWelcomeMessage() {
+        ui.showWelcome();
+        return ui.getLastMessage();
+    }
+
+    public boolean isExit() {
+        return isExit;
+    }
+
 }

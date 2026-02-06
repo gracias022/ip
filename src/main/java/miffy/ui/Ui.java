@@ -1,9 +1,9 @@
 package miffy.ui;
 
-import miffy.task.Task;
-
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import miffy.task.Task;
 
 /**
  * Handles all user interactions in the Miffy application.
@@ -11,15 +11,17 @@ import java.util.Scanner;
  * Provides methods to display messages, read input, and print task lists.
  */
 public class Ui {
-    private final Scanner scanner;
-
     public static final String DEADLINE_USAGE =
-            "Usage: deadline <desc> /by <yyyy-MM-dd HHmm>\n" +
-                    "E.g. deadline return book /by 2026-01-16 1800";
+            "Usage: deadline <desc> /by <yyyy-MM-dd HHmm>\n"
+                    + "E.g. deadline return book /by 2026-01-16 1800";
 
     public static final String EVENT_USAGE =
-            "Usage: event <desc> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>\n" +
-                    "E.g. event meeting /from 2026-01-16 1400 /to 2026-01-16 1600";
+            "Usage: event <desc> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>\n"
+                    + "E.g. event meeting /from 2026-01-16 1400 /to 2026-01-16 1600";
+
+    private final Scanner scanner;
+    private String lastMessage;
+
 
     public Ui() {
         this.scanner = new Scanner(System.in);
@@ -30,8 +32,8 @@ public class Ui {
      */
     public void showWelcome() {
         showLine();
-        System.out.println("  Hello! I'm Miffy ^_^");
-        System.out.println("  What can I do for you?");
+        lastMessage = "  Hello! I'm Miffy ^_^\n  What can I do for you?";
+        System.out.println(lastMessage);
         showLine();
     }
 
@@ -39,7 +41,8 @@ public class Ui {
      * Prints the goodbye message.
      */
     public void showGoodbye() {
-        System.out.println("  Bye. Hope to see you again soon!");
+        lastMessage = "  Bye. Hope to see you again soon!";
+        System.out.println(lastMessage);
     }
 
     /**
@@ -63,24 +66,34 @@ public class Ui {
      *
      * @param tasks List of tasks to display.
      */
+    @SuppressWarnings("checkstyle:Regexp")
     public void showList(ArrayList<Task> tasks) {
         if (tasks.isEmpty()) {
-            System.out.println("  No tasks yet. Add one now!");
+            lastMessage = "  No tasks yet. Add one now!";
+            System.out.println(lastMessage);
             return;
         }
 
-        System.out.println("  Here are the tasks in your list:");
+        StringBuilder sb = new StringBuilder("  Here are the tasks in your list:\n");
+
         for (int i = 0; i < tasks.size(); i++) {
-            System.out.println("  " + (i + 1) + ". " + tasks.get(i));
+            sb.append("  ").append(i + 1).append(". ").append(tasks.get(i)).append("\n");
         }
+
+        if (sb.length() > 0 && sb.charAt(sb.length() - 1) == '\n') {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+
+        lastMessage = sb.deleteCharAt(sb.length() - 1).toString();;
+        System.out.println(lastMessage);
     }
 
     /**
      * Prints a message when loading tasks from storage fails.
      */
     public void showLoadingError() {
-        System.out.println("Oops! I had trouble loading your saved tasks.");
-        System.out.println("We'll start fresh for now.");
+        lastMessage = "Oops! I had trouble loading your saved tasks.\n\"We'll start fresh for now.";
+        System.out.println(lastMessage);
     }
 
     /**
@@ -91,10 +104,19 @@ public class Ui {
     public void showError(String message) {
         String[] lines = message.split("\n");
 
+        StringBuilder sb = new StringBuilder();
+
         // Print each line with a 2-space padding
         for (String line : lines) {
-            System.out.println("  " + line);
+            sb.append("  ").append(line).append("\n");
         }
+
+        if (!sb.isEmpty() && sb.charAt(sb.length() - 1) == '\n') {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+
+        lastMessage = sb.toString();
+        System.out.println(lastMessage);
     }
 
     /**
@@ -105,10 +127,11 @@ public class Ui {
      * @param taskCount Current number of tasks in list.
      */
     public void showOpsConfirmation(Task t, String action, int taskCount) {
-        System.out.println("  " + action + " this task:");
-        System.out.println("  " + t);
-        System.out.printf("  Now you have %d %s in the list.\n", taskCount,
-                taskCount != 1 ? "tasks" : "task");
+        lastMessage = "  " + action + " this task:\n"
+                + "  " + t + "\n"
+                        + String.format("  Now you have %d %s in the list.",
+                                taskCount, taskCount != 1 ? "tasks" : "task");
+        System.out.println(lastMessage);
     }
 
     /**
@@ -119,8 +142,8 @@ public class Ui {
     public void showTaskStatusChanged(Task task) {
         String message = task.isDone() ? "Nice! I've marked this as done:"
                 : "OK, I've marked this as not done:";
-        System.out.println("  " + message);
-        System.out.println("  " + task);
+        lastMessage = "  " + message + "\n  " + task;
+        System.out.println(lastMessage);
     }
 
     /**
@@ -130,14 +153,26 @@ public class Ui {
      */
     public void showFindResults(ArrayList<Task> matches) {
         if (matches.isEmpty()) {
-            System.out.println("  Oops! No matching tasks found :(");
+            lastMessage = "  Oops! No matching tasks found :(";
+            System.out.println(lastMessage);
             return;
         }
 
-        System.out.println("  Here are the matching tasks in your list:");
+        StringBuilder sb = new StringBuilder("  Here are the matching tasks in your list:\n");
         for (int i = 0; i < matches.size(); i++) {
-            System.out.println("  " + (i + 1) + ". " + matches.get(i));
+            sb.append("  ").append(i + 1).append(". ").append(matches.get(i)).append("\n");
         }
+
+        if (!sb.isEmpty() && sb.charAt(sb.length() - 1) == '\n') {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+
+        lastMessage = sb.toString();
+        System.out.println(lastMessage);
+    }
+
+    public String getLastMessage() {
+        return lastMessage;
     }
 
     /**
