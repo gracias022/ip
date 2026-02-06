@@ -1,10 +1,10 @@
 package miffy.storage;
 
-import miffy.task.Deadline;
-import miffy.task.Event;
-import miffy.task.Task;
-import miffy.task.Todo;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.FileWriter;
 import java.nio.file.Files;
@@ -12,10 +12,17 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+import miffy.task.Deadline;
+import miffy.task.Event;
+import miffy.task.Task;
+import miffy.task.Todo;
+
 
 public class StorageTest {
 
+    @SuppressWarnings("checkstyle:MethodName")
     @Test
     public void parseTaskFromLine_Todo_createsTodoTask() {
         Task t = Storage.parseTaskFromLine("T | 0 | read");
@@ -43,6 +50,7 @@ public class StorageTest {
         assertEquals("Unknown task type: X", e.getMessage());
     }
 
+    @SuppressWarnings("checkstyle:MethodName")
     @Test
     public void parseTaskFromLine_Deadline_createsDeadlineTask() {
         Task t = Storage.parseTaskFromLine("D | 0 | return book | 2026-01-17T18:00");
@@ -61,6 +69,7 @@ public class StorageTest {
         assertEquals("[D][X] return book (by: Jan 17 2026 6:00 PM)", t.toString());
     }
 
+    @SuppressWarnings("checkstyle:MethodName")
     @Test
     public void parseTaskFromLine_Event_createsEventTask() {
         Task t = Storage.parseTaskFromLine("E | 0 | meeting | 2026-01-17T16:00 | 2026-01-17T18:00");
@@ -127,7 +136,7 @@ public class StorageTest {
 
 
     @Test
-    public void load_fileWithCorruptedLine_lineSkipped () throws Exception {
+    public void load_fileWithCorruptedLine_lineSkipped() throws Exception {
         Path tempFile = Files.createTempFile("storage-test", ".txt");
 
         try (FileWriter fw = new FileWriter(tempFile.toString())) {
