@@ -24,7 +24,7 @@ public class StorageTest {
 
     @SuppressWarnings("checkstyle:MethodName")
     @Test
-    public void parseTaskFromLine_Todo_createsTodoTask() {
+    public void parseTaskFromLine_todo_createsTodoTask() {
         Task t = Storage.parseTaskFromLine("T | 0 | read");
 
         assertInstanceOf(Todo.class, t);
@@ -52,7 +52,7 @@ public class StorageTest {
 
     @SuppressWarnings("checkstyle:MethodName")
     @Test
-    public void parseTaskFromLine_Deadline_createsDeadlineTask() {
+    public void parseTaskFromLine_deadline_createsDeadlineTask() {
         Task t = Storage.parseTaskFromLine("D | 0 | return book | 2026-01-17T18:00");
 
         assertInstanceOf(Deadline.class, t);
@@ -71,7 +71,7 @@ public class StorageTest {
 
     @SuppressWarnings("checkstyle:MethodName")
     @Test
-    public void parseTaskFromLine_Event_createsEventTask() {
+    public void parseTaskFromLine_event_createsEventTask() {
         Task t = Storage.parseTaskFromLine("E | 0 | meeting | 2026-01-17T16:00 | 2026-01-17T18:00");
 
         assertInstanceOf(Event.class, t);
