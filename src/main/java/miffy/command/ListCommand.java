@@ -19,7 +19,7 @@ public class ListCommand extends Command {
      * @param storage {@link Storage} for task data persistence (unused for list operation).
      */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) {
+    public void executeCommand(TaskList tasks, Ui ui, Storage storage) {
         ui.showList(tasks.getAllTasks());
     }
 }

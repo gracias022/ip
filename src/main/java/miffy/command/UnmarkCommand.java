@@ -33,11 +33,14 @@ public class UnmarkCommand extends Command {
      * @throws MiffyException If specified index is invalid or saving fails.
      */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws MiffyException {
+    public void executeCommand(TaskList tasks, Ui ui, Storage storage) throws MiffyException {
         if (zeroBasedIndex < 0 || zeroBasedIndex >= tasks.getTaskCount()) {
             throw new MiffyException("Oops! This task number doesn’t exist :(");
         }
+
         Task task = tasks.unmark(zeroBasedIndex);
+        assert task != null : "unmark should always return a Task";
+
         storage.save(tasks.getAllTasks());
         ui.showTaskStatusChanged(task);
     }

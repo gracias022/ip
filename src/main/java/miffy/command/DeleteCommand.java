@@ -34,11 +34,13 @@ public class DeleteCommand extends Command {
      * @throws MiffyException If specified index is invalid or saving fails.
      */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws MiffyException {
+    public void executeCommand(TaskList tasks, Ui ui, Storage storage) throws MiffyException {
         if (zeroBasedIndex < 0 || zeroBasedIndex >= tasks.getTaskCount()) {
             throw new MiffyException("Oops! This task number doesn’t exist :(");
         }
         Task task = tasks.deleteTask(zeroBasedIndex);
+        assert task != null : "deleteTask should always return a Task";
+
         storage.save(tasks.getAllTasks());
         ui.showOpsConfirmation(task, "Noted. I've removed", tasks.getTaskCount());
     }
