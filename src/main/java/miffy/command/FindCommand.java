@@ -1,8 +1,8 @@
 package miffy.command;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
-import miffy.exception.MiffyException;
 import miffy.storage.Storage;
 import miffy.task.Task;
 import miffy.task.TaskList;
@@ -31,18 +31,12 @@ public class FindCommand extends Command {
      * @param tasks Task list to search.
      * @param ui UI for displaying results.
      * @param storage Storage handler (not used by this command).
-     * @throws MiffyException Never thrown in this command but required by
-     * the method signature.
      */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws MiffyException {
-        ArrayList<Task> allMatches = new ArrayList<>();
-
-        for (Task task : tasks.getAllTasks()) {
-            if (task.hasKeyword(keyword)) {
-                allMatches.add(task);
-            }
-        }
+    public void execute(TaskList tasks, Ui ui, Storage storage) {
+        ArrayList<Task> allMatches = tasks.getAllTasks().stream()
+                .filter(task -> task.hasKeyword(keyword))
+                .collect(Collectors.toCollection(ArrayList::new));
 
         ui.showFindResults(allMatches);
     }
