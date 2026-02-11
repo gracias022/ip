@@ -50,10 +50,10 @@ public class Ui {
     /**
      * Reads the next line of input from the user.
      *
-     * @return Trimmed input string.
+     * @return Raw input string.
      */
     public String readCommand() {
-        return scanner.nextLine().trim();
+        return scanner.nextLine();
     }
 
     /**
