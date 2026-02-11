@@ -7,7 +7,7 @@ import miffy.task.TaskList;
 import miffy.ui.Ui;
 
 /**
- * Handles execution logic for removing a {@link Task} from a {@link TaskList}.
+ * Represents a command that removes a {@link Task} from a {@link TaskList}.
  * <p>
  * When executed, this command removes the task at the specified index from the list,
  * saves the updated list to storage, and notifies the user via the {@link Ui}.

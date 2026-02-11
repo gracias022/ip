@@ -7,7 +7,7 @@ import miffy.task.TaskList;
 import miffy.ui.Ui;
 
 /**
- * Handles execution logic for unmarking a {@link Task} in the {@link TaskList}.
+ * Represents a command that unmarks a {@link Task} in the {@link TaskList}.
  * <p>
  * When executed, this command unmarks the task at the given index, saves the updated list
  * to storage, and shows a status change confirmation via the {@link Ui}.

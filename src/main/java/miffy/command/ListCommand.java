@@ -5,7 +5,7 @@ import miffy.task.TaskList;
 import miffy.ui.Ui;
 
 /**
- * Handles execution logic for listing all tasks in a {@link TaskList}.
+ * Represents a command that lists all tasks in a {@link TaskList}.
  * <p>
  * When executed, this command retrieves all tasks and displays them via the {@link Ui}.
  */

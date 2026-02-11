@@ -5,7 +5,7 @@ import miffy.task.TaskList;
 import miffy.ui.Ui;
 
 /**
- * Handles execution logic to exit the Miffy application.
+ * Represents a command that exits the Miffy application.
  * <p>
  * When executed, this command displays a goodbye message and closes the input scanner.
  */

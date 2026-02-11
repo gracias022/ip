@@ -1,5 +1,9 @@
 package miffy.parser;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 import miffy.command.AddDeadlineCommand;
 import miffy.command.AddEventCommand;
 import miffy.command.AddTodoCommand;
@@ -13,17 +17,6 @@ import miffy.command.UnmarkCommand;
 import miffy.exception.MiffyException;
 import miffy.ui.Ui;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-
-/**
- * Parses user input strings into {@link Command} objects for execution by Miffy.
- * <p>
- * Handles commands including: todo, deadline, event, mark, unmark, delete, list, and bye.
- * Also validates input formats, including checking for non-empty task descriptions
- * and correct date-time formats.
- */
 /**
  * Parses user input strings into {@link Command} objects for execution by Miffy.
  * <p>
@@ -142,10 +135,10 @@ public class Parser {
                 int userIndex = Integer.parseInt(parts[1]);
                 int zeroBasedIndex = userIndex - 1;
                 return switch (commandType) {
-                    case "mark" -> new MarkCommand(zeroBasedIndex);
-                    case "unmark" -> new UnmarkCommand(zeroBasedIndex);
-                    case "delete" -> new DeleteCommand(zeroBasedIndex);
-                    default -> throw new MiffyException("Unknown command: " + commandType);
+                case "mark" -> new MarkCommand(zeroBasedIndex);
+                case "unmark" -> new UnmarkCommand(zeroBasedIndex);
+                case "delete" -> new DeleteCommand(zeroBasedIndex);
+                default -> throw new MiffyException("Unknown command: " + commandType);
                 };
             } catch (NumberFormatException e) {
                 throw new MiffyException("Please enter a valid task number. Usage: %s <index>".formatted(commandType));

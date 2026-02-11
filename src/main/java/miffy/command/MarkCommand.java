@@ -7,7 +7,7 @@ import miffy.task.TaskList;
 import miffy.ui.Ui;
 
 /**
- * Handles execution logic for marking a {@link Task} as done in the {@link TaskList}.
+ * Represents a command that marks a {@link Task} as done in the {@link TaskList}.
  * <p>
  * When executed, this command marks the task at the given index, saves the updated list
  * to storage, and shows a status change confirmation via the {@link Ui}.

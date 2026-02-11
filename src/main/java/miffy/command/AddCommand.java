@@ -7,10 +7,10 @@ import miffy.task.TaskList;
 import miffy.ui.Ui;
 
 /**
- * Handles execution logic for adding a task to list.
+ * Represents a command that adds a {@link Task} to the task list.
  * <p>
- * When executed, this command adds a new {@link Task} to the {@link TaskList},
- * saves the updated list to storage, and notifies the user via the {@link Ui}.
+ * When executed, the task is added to the list, the updated list is saved to storage,
+ * and the user is notified via the {@link Ui}.
  */
 public class AddCommand extends Command {
     private Task task;
