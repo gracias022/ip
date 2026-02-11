@@ -19,6 +19,8 @@ public class Ui {
             "Usage: event <desc> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>\n"
                     + "E.g. event meeting /from 2026-01-16 1400 /to 2026-01-16 1600";
 
+    private static final String INDENT = "  ";
+
     private final Scanner scanner;
     private String lastMessage;
 
@@ -32,7 +34,7 @@ public class Ui {
      */
     public void showWelcome() {
         showLine();
-        lastMessage = "  Hello! I'm Miffy ^_^\n  What can I do for you?";
+        lastMessage = INDENT + "Hello! I'm Miffy ^_^\n  What can I do for you?";
         System.out.println(lastMessage);
         showLine();
     }
@@ -41,7 +43,7 @@ public class Ui {
      * Prints the goodbye message.
      */
     public void showGoodbye() {
-        lastMessage = "  Bye. Hope to see you again soon!";
+        lastMessage = INDENT + "Bye. Hope to see you again soon!";
         System.out.println(lastMessage);
     }
 
@@ -62,33 +64,6 @@ public class Ui {
     }
 
     /**
-     * Displays a numbered list of tasks.
-     *
-     * @param tasks List of tasks to display.
-     */
-    @SuppressWarnings("checkstyle:Regexp")
-    public void showList(ArrayList<Task> tasks) {
-        if (tasks.isEmpty()) {
-            lastMessage = "  No tasks yet. Add one now!";
-            System.out.println(lastMessage);
-            return;
-        }
-
-        StringBuilder sb = new StringBuilder("  Here are the tasks in your list:\n");
-
-        for (int i = 0; i < tasks.size(); i++) {
-            sb.append("  ").append(i + 1).append(". ").append(tasks.get(i)).append("\n");
-        }
-
-        if (sb.length() > 0 && sb.charAt(sb.length() - 1) == '\n') {
-            sb.deleteCharAt(sb.length() - 1);
-        }
-
-        lastMessage = sb.deleteCharAt(sb.length() - 1).toString();;
-        System.out.println(lastMessage);
-    }
-
-    /**
      * Prints a message when loading tasks from storage fails.
      */
     public void showLoadingError() {
@@ -102,36 +77,43 @@ public class Ui {
      * @param message Error message to display.
      */
     public void showError(String message) {
-        String[] lines = message.split("\n");
+        StringBuilder sb = formatWithIndent(message);
+        lastMessage = removeTrailingNewline(sb);
+        System.out.println(lastMessage);
+    }
 
+    private StringBuilder formatWithIndent(String message) {
+        String[] lines = message.split("\n");
         StringBuilder sb = new StringBuilder();
 
-        // Print each line with a 2-space padding
         for (String line : lines) {
-            sb.append("  ").append(line).append("\n");
+            sb.append(INDENT).append(line).append("\n");
         }
 
-        if (!sb.isEmpty() && sb.charAt(sb.length() - 1) == '\n') {
-            sb.deleteCharAt(sb.length() - 1);
-        }
-
-        lastMessage = sb.toString();
-        System.out.println(lastMessage);
+        return sb;
     }
 
     /**
      * Confirms that an operation (add/delete) has been performed on a task.
      *
-     * @param t Task affected.
+     * @param task Task affected.
      * @param action Action performed.
      * @param taskCount Current number of tasks in list.
      */
-    public void showOpsConfirmation(Task t, String action, int taskCount) {
-        lastMessage = "  " + action + " this task:\n"
-                + "  " + t + "\n"
-                        + String.format("  Now you have %d %s in the list.",
-                                taskCount, taskCount != 1 ? "tasks" : "task");
+    public void showOpsConfirmation(Task task, String action, int taskCount) {
+        lastMessage = formatOpsConfirmation(task, action, taskCount);
         System.out.println(lastMessage);
+    }
+
+    private String formatOpsConfirmation(Task task, String action, int taskCount) {
+        return INDENT + action + " this task:\n"
+                + INDENT + task + "\n"
+                + INDENT + formatTaskCountMessage(taskCount);
+    }
+
+    private String formatTaskCountMessage(int taskCount) {
+        String plural = taskCount != 1 ? "tasks" : "task";
+        return String.format("Now you have %d %s in the list.", taskCount, plural);
     }
 
     /**
@@ -142,7 +124,23 @@ public class Ui {
     public void showTaskStatusChanged(Task task) {
         String message = task.isDone() ? "Nice! I've marked this as done:"
                 : "OK, I've marked this as not done:";
-        lastMessage = "  " + message + "\n  " + task;
+        lastMessage = INDENT + message + "\n  " + task;
+        System.out.println(lastMessage);
+    }
+
+    /**
+     * Displays a numbered list of tasks.
+     *
+     * @param tasks List of tasks to display.
+     */
+    public void showList(ArrayList<Task> tasks) {
+        if (tasks.isEmpty()) {
+            lastMessage = getNoTasksMessage();
+            System.out.println(lastMessage);
+            return;
+        }
+
+        lastMessage = buildTaskList(tasks, "Here are the tasks in your list:");
         System.out.println(lastMessage);
     }
 
@@ -153,22 +151,48 @@ public class Ui {
      */
     public void showFindResults(ArrayList<Task> matches) {
         if (matches.isEmpty()) {
-            lastMessage = "  Oops! No matching tasks found :(";
+            lastMessage = getNoMatchesMessage();
             System.out.println(lastMessage);
             return;
         }
 
-        StringBuilder sb = new StringBuilder("  Here are the matching tasks in your list:\n");
-        for (int i = 0; i < matches.size(); i++) {
-            sb.append("  ").append(i + 1).append(". ").append(matches.get(i)).append("\n");
-        }
-
-        if (!sb.isEmpty() && sb.charAt(sb.length() - 1) == '\n') {
-            sb.deleteCharAt(sb.length() - 1);
-        }
-
-        lastMessage = sb.toString();
+        lastMessage = buildTaskList(matches, "Here are the matching tasks in your list:");
         System.out.println(lastMessage);
+    }
+
+    private String getNoTasksMessage() {
+        return INDENT + "No tasks yet. Add one now!";
+    }
+
+    private String getNoMatchesMessage() {
+        return INDENT + "Oops! No matching tasks found :(";
+    }
+
+    private String buildTaskList(ArrayList<Task> tasks, String header) {
+        StringBuilder sb = new StringBuilder(INDENT + header + "\n");
+        appendNumberedTasks(sb, tasks);
+        return removeTrailingNewline(sb);
+    }
+
+    private void appendNumberedTasks(StringBuilder sb, ArrayList<Task> tasks) {
+        for (int i = 0; i < tasks.size(); i++) {
+            sb.append(INDENT)
+                    .append(i + 1)
+                    .append(". ")
+                    .append(tasks.get(i))
+                    .append("\n");
+        }
+    }
+
+    private String removeTrailingNewline(StringBuilder sb) {
+        int lastCharIndex = sb.length() - 1;
+        boolean isLastCharNewline = sb.charAt(lastCharIndex) == '\n';
+
+        if (!sb.isEmpty() && isLastCharNewline) {
+            sb.deleteCharAt(lastCharIndex);
+        }
+
+        return sb.toString();
     }
 
     public String getLastMessage() {
@@ -179,6 +203,6 @@ public class Ui {
      * Prints a horizontal line separator.
      */
     public void showLine() {
-        System.out.println("  ________________________________________________________________________________");
+        System.out.println(INDENT + "________________________________________________________________________________");
     }
 }
