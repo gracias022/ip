@@ -49,7 +49,7 @@ public class Parser {
     public static Command parse(String fullCommand) throws MiffyException {
         String trimmedCommand = fullCommand.trim();
         String[] parts = trimmedCommand.split("\\s+", 2);
-        String commandType = parts[0].toLowerCase();
+        String commandType = CommandAlias.expand(parts[0].toLowerCase());
 
         return switch (commandType) {
         case "bye" -> getExitCommand(fullCommand);
