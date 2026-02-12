@@ -1,8 +1,5 @@
 package miffy.storage;
 
-import miffy.exception.MiffyException;
-import miffy.task.*;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,6 +9,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import miffy.exception.MiffyException;
+import miffy.task.Deadline;
+import miffy.task.Event;
+import miffy.task.Task;
+import miffy.task.Todo;
+
 
 /**
  * Handles persistent task storage and management for the Miffy application.
@@ -123,6 +127,7 @@ public class Storage {
      * @throws MiffyException If an I/O exception occurs while accessing or writing to the data file.
      */
     public void save(ArrayList<Task> tasks) throws MiffyException {
+        assert tasks != null : "TaskList should not be null";
         try (FileWriter fw = new FileWriter(path.toString())) {
             for (Task t : tasks) {
                 fw.write(t.formatTaskForStorage());
