@@ -1,19 +1,16 @@
 package miffy.command;
 
-import miffy.exception.MiffyException;
-import miffy.storage.Storage;
 import miffy.task.Task;
 import miffy.task.TaskList;
 import miffy.ui.Ui;
 
 /**
- * Handles execution logic for unmarking a {@link Task} in the {@link TaskList}.
+ * Represents a command that unmarks a {@link Task} in the {@link TaskList}.
  * <p>
  * When executed, this command unmarks the task at the given index, saves the updated list
  * to storage, and shows a status change confirmation via the {@link Ui}.
  */
-public class UnmarkCommand extends Command {
-    private final int zeroBasedIndex;
+public class UnmarkCommand extends StatusChangeCommand {
 
     /**
      * Constructs a UnmarkCommand for the task at the given zero-based index.
@@ -21,27 +18,17 @@ public class UnmarkCommand extends Command {
      * @param zeroBasedIndex Index of task to unmark (0-based).
      */
     public UnmarkCommand(int zeroBasedIndex) {
-        this.zeroBasedIndex = zeroBasedIndex;
+        super(zeroBasedIndex);
     }
 
     /**
-     * Unmarks the task, saves the updated list, and displays a confirmation message.
+     * Unmarks the task at the given index.
      *
      * @param tasks {@link TaskList} containing the task.
-     * @param ui {@link Ui} for showing feedback to user.
-     * @param storage {@link Storage} for persisting the updated task list.
-     * @throws MiffyException If specified index is invalid or saving fails.
+     * @param index Zero-based index of the task to unmark.
      */
     @Override
-    public void executeCommand(TaskList tasks, Ui ui, Storage storage) throws MiffyException {
-        if (zeroBasedIndex < 0 || zeroBasedIndex >= tasks.getTaskCount()) {
-            throw new MiffyException("Oops! This task number doesn’t exist :(");
-        }
-
-        Task task = tasks.unmark(zeroBasedIndex);
-        assert task != null : "unmark should always return a Task";
-
-        storage.save(tasks.getAllTasks());
-        ui.showTaskStatusChanged(task);
+    protected Task performStatusChange(TaskList tasks, int index) {
+        return tasks.unmark(index);
     }
 }
