@@ -1,6 +1,7 @@
 package miffy.command;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import miffy.storage.Storage;
 import miffy.task.Task;
@@ -33,13 +34,9 @@ public class FindCommand extends Command {
      */
     @Override
     public void executeCommand(TaskList tasks, Ui ui, Storage storage) {
-        ArrayList<Task> allMatches = new ArrayList<>();
-
-        for (Task task : tasks.getAllTasks()) {
-            if (task.hasKeyword(keyword)) {
-                allMatches.add(task);
-            }
-        }
+        ArrayList<Task> allMatches = tasks.getAllTasks().stream()
+                .filter(task -> task.hasKeyword(keyword))
+                .collect(Collectors.toCollection(ArrayList::new));
 
         ui.showFindResults(allMatches);
     }
