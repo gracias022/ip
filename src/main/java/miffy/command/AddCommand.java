@@ -34,7 +34,7 @@ public class AddCommand extends Command {
      * @throws MiffyException If saving to storage fails.
      */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws MiffyException {
+    public void executeCommand(TaskList tasks, Ui ui, Storage storage) throws MiffyException {
         tasks.add(task);
         storage.save(tasks.getAllTasks());
         ui.showOpsConfirmation(task, "Got it. I've added", tasks.getTaskCount());

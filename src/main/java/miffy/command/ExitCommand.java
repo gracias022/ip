@@ -19,7 +19,7 @@ public class ExitCommand extends Command {
      * @param storage {@link Storage} for task data persistence (unused for exit).
      */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) {
+    public void executeCommand(TaskList tasks, Ui ui, Storage storage) {
         ui.showGoodbye();
         ui.closeScanner();
     }
