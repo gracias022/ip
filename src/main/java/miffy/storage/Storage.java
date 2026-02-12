@@ -14,8 +14,8 @@ import miffy.exception.MiffyException;
 import miffy.task.Deadline;
 import miffy.task.Event;
 import miffy.task.Task;
+import miffy.task.TaskList;
 import miffy.task.Todo;
-
 
 /**
  * Handles persistent task storage and management for the Miffy application.
@@ -51,21 +51,11 @@ public class Storage {
         ArrayList<Task> tasks = new ArrayList<>();
 
         try {
-            if (!Files.exists(path)) {
-                Files.createDirectories(path.getParent());
-                Files.createFile(path);
-                return tasks; // return empty task list
-            }
+            ensureFileExists();
 
-            try (Scanner s = new Scanner(path)) {
-                while (s.hasNextLine()) {
-                    String line = s.nextLine();
-                    try {
-                        tasks.add(parseTaskFromLine(line));
-                    } catch (IllegalArgumentException | DateTimeParseException e) {
-                        System.out.println("  Oops, corrupted line detected! Skipping:");
-                        System.out.println("  " + line);
-                    }
+            try (Scanner scanner = new Scanner(path)) {
+                while (scanner.hasNextLine()) {
+                    processLine(scanner.nextLine(), tasks);
                 }
             }
 
@@ -76,6 +66,31 @@ public class Storage {
         }
     }
 
+    private void ensureFileExists() throws IOException {
+        if (Files.exists(path)) {
+            return;
+        }
+
+        Files.createDirectories(path.getParent());
+        Files.createFile(path);
+    }
+
+    /**
+     * Parses a single line from the storage file into a {@link Task} and adds it to the given task list.
+     *
+     * @param line Raw line read from the file.
+     * @param tasks {@link TaskList} to add the parsed task to.
+     */
+    private void processLine(String line, ArrayList<Task> tasks) {
+        try {
+            tasks.add(parseTaskFromLine(line));
+        } catch (IllegalArgumentException | DateTimeParseException e) {
+            System.out.println("  Oops, corrupted line detected! Skipping:");
+            System.out.println("  " + line);
+        }
+    }
+
+
     /**
      * Parses a single line from the data file into a {@link Task} object.
      *
@@ -85,36 +100,42 @@ public class Storage {
      */
     public static Task parseTaskFromLine(String line) {
         String[] parts = line.split(" \\| ");
+        validateParts(parts, line);
 
+        Task task = createTask(parts);
+        markIfDone(task, parts[1]);
+
+        return task;
+    }
+
+    private static void validateParts(String[] parts, String line) {
         if (parts.length < 3) {
             throw new IllegalArgumentException("Corrupted line: " + line);
         }
+    }
 
+    private static Task createTask(String[] parts) {
         String taskType = parts[0];
-        Task task;
 
         switch (taskType) {
         case "T":
-            task = new Todo(parts[2]);
-            break;
+            return new Todo(parts[2]);
         case "D":
             LocalDateTime byDate = LocalDateTime.parse(parts[3]);
-            task = new Deadline(parts[2], byDate);
-            break;
+            return new Deadline(parts[2], byDate);
         case "E":
             LocalDateTime fromDate = LocalDateTime.parse(parts[3]);
             LocalDateTime toDate = LocalDateTime.parse(parts[4]);
-            task = new Event(parts[2], fromDate, toDate);
-            break;
+            return new Event(parts[2], fromDate, toDate);
         default:
             throw new IllegalArgumentException("Unknown task type: " + taskType);
         }
+    }
 
-        if (parts[1].equals("1")) {
+    private static void markIfDone(Task task, String completionFlag) {
+        if ("1".equals(completionFlag)) {
             task.markAsDone();
         }
-
-        return task;
     }
 
     /**
