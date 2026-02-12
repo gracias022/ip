@@ -33,7 +33,7 @@ public class FindCommand extends Command {
      * @param storage Storage handler (not used by this command).
      */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) {
+    public void executeCommand(TaskList tasks, Ui ui, Storage storage) {
         ArrayList<Task> allMatches = tasks.getAllTasks().stream()
                 .filter(task -> task.hasKeyword(keyword))
                 .collect(Collectors.toCollection(ArrayList::new));
