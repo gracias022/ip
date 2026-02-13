@@ -63,7 +63,7 @@ public class Parser {
             case TODO -> getAddTodoCommand(parts);
             case DEADLINE -> getAddDeadlineCommand(parts);
             case EVENT -> getAddEventCommand(parts);
-            case MARK, UNMARK, DELETE -> getMarkOrDeleteCommand(parts, commandType.name());
+            case MARK, UNMARK, DELETE -> getMarkOrDeleteCommand(parts, commandType);
             case FIND -> getFindCommand(parts);
         };
     }
@@ -84,7 +84,7 @@ public class Parser {
         String[] details;
 
         /* Check for "setalias", "setalias " */
-        if (isPartsInvalid(parts)) {
+        if (isPartsTooShort(parts)) {
             throw new MiffyException("Oops! " + SetAliasCommand.MESSAGE_USAGE);
         }
 
@@ -115,7 +115,7 @@ public class Parser {
     }
 
     private static FindCommand getFindCommand(String[] parts) throws MiffyException {
-        if (isPartsInvalid(parts)) {
+        if (isPartsTooShort(parts)) {
             throw new MiffyException("Oops! Usage: find <keyword>\n" + "e.g. find meeting");
         }
 
@@ -123,7 +123,7 @@ public class Parser {
     }
 
     private static AddTodoCommand getAddTodoCommand(String[] parts) throws MiffyException {
-        if (isPartsInvalid(parts)) {
+        if (isPartsTooShort(parts)) {
             throw new MiffyException("Oops, the description of a todo cannot be empty!\n"
                     + "Usage: todo <desc> (e.g. todo read book)");
         }
@@ -145,7 +145,7 @@ public class Parser {
         String[] details;
 
         /* Check for "deadline", "deadline " */
-        if (isPartsInvalid(parts)) {
+        if (isPartsTooShort(parts)) {
             throw new MiffyException("Oops, the description and ending date/time of a deadline cannot be empty!\n"
                     + AddDeadlineCommand.DEADLINE_USAGE);
         }
@@ -173,7 +173,7 @@ public class Parser {
         String[] details;
 
         /* Check for "event", "event " */
-        if (isPartsInvalid(parts)) {
+        if (isPartsTooShort(parts)) {
             throw new MiffyException(
                     "Oops, the event description, start date/time and end date/time cannot be empty!\n"
                             + AddEventCommand.EVENT_USAGE);
@@ -194,24 +194,27 @@ public class Parser {
         }
     }
 
-    private static Command getMarkOrDeleteCommand(String[] parts, String commandType) throws MiffyException {
-        if (isPartsInvalid(parts)) {
+    private static Command getMarkOrDeleteCommand(String[] parts, CommandType commandType) throws MiffyException {
+        String command = commandType.name().toLowerCase();
+
+        if (isPartsTooShort(parts)) {
             throw new MiffyException(
-                    "Oops! Please specify which task to %s. Usage: %s <index>".formatted(commandType, commandType));
+                    "Oops! Please specify which task to %s. Usage: %s <index>".formatted(command, command));
         }
 
-        if (parts.length > 2) {
+        boolean hasExtraArgument = parts.length > 2;
+        if (hasExtraArgument) {
             throw new MiffyException(
-                    "Oops! One task at a time please -_- Usage: %s <index>".formatted(commandType));
+                    "Oops! One task at a time please -_- Usage: %s <index>".formatted(command));
         }
 
-        int zeroBasedIndex = parseZeroBasedIndex(parts[1], commandType);
+        int zeroBasedIndex = parseZeroBasedIndex(parts[1], command);
 
         return switch (commandType) {
-        case "mark" -> new MarkCommand(zeroBasedIndex);
-        case "unmark" -> new UnmarkCommand(zeroBasedIndex);
-        case "delete" -> new DeleteCommand(zeroBasedIndex);
-        default -> throw new MiffyException("Oops! Unknown command: " + commandType);
+            case MARK -> new MarkCommand(zeroBasedIndex);
+            case UNMARK -> new UnmarkCommand(zeroBasedIndex);
+            case DELETE -> new DeleteCommand(zeroBasedIndex);
+            default -> throw new MiffyException("Oops! Unknown command: " + command);
         };
     }
 
@@ -221,7 +224,8 @@ public class Parser {
             return userIndex - 1;
         } catch (NumberFormatException e) {
             throw new MiffyException(
-                    "Oops! Please enter a valid task number. Usage: %s <index>".formatted(commandType));
+                    "Oops! Please enter a valid task number. Usage: %s <index>"
+                            .formatted(commandType));
         }
     }
 
@@ -233,7 +237,7 @@ public class Parser {
         }
     }
 
-    private static boolean isPartsInvalid(String[] parts) {
+    private static boolean isPartsTooShort(String[] parts) {
         return parts.length < 2 || parts[1].isBlank();
     }
 
