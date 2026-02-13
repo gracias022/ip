@@ -23,7 +23,9 @@ public class CommandAlias {
             "f", CommandType.FIND,
             "del", CommandType.DELETE,
             "m", CommandType.MARK,
-            "um", CommandType.UNMARK
+            "um", CommandType.UNMARK,
+            "sa", CommandType.SETALIAS,
+            "al", CommandType.ALIASES
     );
 
     // User-defined aliases (mutable, in-memory only)
