@@ -8,14 +8,16 @@ import miffy.command.AddDeadlineCommand;
 import miffy.command.AddEventCommand;
 import miffy.command.AddTodoCommand;
 import miffy.command.Command;
+import miffy.command.CommandType;
 import miffy.command.DeleteCommand;
 import miffy.command.ExitCommand;
 import miffy.command.FindCommand;
+import miffy.command.ListAliasesCommand;
 import miffy.command.ListCommand;
 import miffy.command.MarkCommand;
+import miffy.command.SetAliasCommand;
 import miffy.command.UnmarkCommand;
 import miffy.exception.MiffyException;
-import miffy.ui.Ui;
 
 /**
  * Parses user input strings into {@link Command} objects for execution by Miffy.
@@ -34,6 +36,8 @@ public class Parser {
     public static final DateTimeFormatter INPUT_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
 
+    private static final String MESSAGE_DATE_FORMAT =
+            "Oops, wrong date format! Please use yyyy-MM-dd HHmm (e.g. 2026-01-16 1800)";
     /**
      * Parses a full command string entered by the user and returns the corresponding {@link Command} object.
      * <p>
@@ -49,29 +53,62 @@ public class Parser {
     public static Command parse(String fullCommand) throws MiffyException {
         String trimmedCommand = fullCommand.trim();
         String[] parts = trimmedCommand.split("\\s+", 2);
-        String commandType = CommandAlias.expand(parts[0].toLowerCase());
+        CommandType commandType = CommandAlias.expand(parts[0].toLowerCase());
 
         return switch (commandType) {
-        case "bye" -> getExitCommand(fullCommand);
-        case "list" -> getListCommand(fullCommand);
-        case "todo" -> getAddTodoCommand(parts);
-        case "deadline" -> getAddDeadlineCommand(parts);
-        case "event" -> getAddEventCommand(parts);
-        case "mark", "unmark", "delete" -> getMarkOrDeleteCommand(parts, commandType);
-        case "find" -> getFindCommand(parts);
-        default -> throw new MiffyException("Sorry, I don't know what that means :(");
+            case SETALIAS -> getSetAliasCommand(parts);
+            case ALIASES -> getListAliasesCommand(parts);
+            case BYE -> getExitCommand(parts);
+            case LIST -> getListCommand(parts);
+            case TODO -> getAddTodoCommand(parts);
+            case DEADLINE -> getAddDeadlineCommand(parts);
+            case EVENT -> getAddEventCommand(parts);
+            case MARK, UNMARK, DELETE -> getMarkOrDeleteCommand(parts, commandType.name());
+            case FIND -> getFindCommand(parts);
         };
     }
 
-    private static ExitCommand getExitCommand(String fullCommand) throws MiffyException {
-        if (!fullCommand.equalsIgnoreCase("bye")) {
+    private static SetAliasCommand getSetAliasCommand(String[] parts) throws MiffyException {
+        String[] details = getAliasDetails(parts);
+        String alias = details[0];
+        String command = details[1];
+
+        if (isDetailsInvalid(details)) {
+            throw new MiffyException("Oops! " + SetAliasCommand.MESSAGE_USAGE);
+        }
+
+        return new SetAliasCommand(alias, command);
+    }
+
+    private static String[] getAliasDetails(String[] parts) throws MiffyException {
+        String[] details;
+
+        /* Check for "setalias", "setalias " */
+        if (isPartsInvalid(parts)) {
+            throw new MiffyException("Oops! " + SetAliasCommand.MESSAGE_USAGE);
+        }
+
+        /* Split part[1] into <alias> and <command> */
+        details = parts[1].split("\\s+", 2);
+        return details;
+    }
+
+    private static ListAliasesCommand getListAliasesCommand(String[] parts) throws MiffyException {
+        if (parts.length > 1) {
+            throw new MiffyException("Oops! Usage: aliases");
+        }
+        return new ListAliasesCommand();
+    }
+
+    private static ExitCommand getExitCommand(String[] parts) throws MiffyException {
+        if (parts.length > 1) {
             throw new MiffyException("Oops! Usage: bye");
         }
         return new ExitCommand();
     }
 
-    private static ListCommand getListCommand(String fullCommand) throws MiffyException {
-        if (!fullCommand.equalsIgnoreCase("list")) {
+    private static ListCommand getListCommand(String[] parts) throws MiffyException {
+        if (parts.length > 1) {
             throw new MiffyException("Oops! Usage: list");
         }
         return new ListCommand();
@@ -79,7 +116,7 @@ public class Parser {
 
     private static FindCommand getFindCommand(String[] parts) throws MiffyException {
         if (isPartsInvalid(parts)) {
-            throw new MiffyException("Please enter a keyword. Usage: find <keyword>");
+            throw new MiffyException("Oops! Usage: find <keyword>\n" + "e.g. find meeting");
         }
 
         return new FindCommand(parts[1]);
@@ -97,7 +134,7 @@ public class Parser {
         String[] details = getDeadlineDetails(parts);
 
         if (isDetailsInvalid(details)) {
-            throw new MiffyException("Invalid input format! " + Ui.DEADLINE_USAGE);
+            throw new MiffyException("Oops! " + AddDeadlineCommand.DEADLINE_USAGE);
         }
 
         LocalDateTime dateTime = parseDateTime(details[1]);
@@ -106,10 +143,11 @@ public class Parser {
 
     private static String[] getDeadlineDetails(String[] parts) throws MiffyException {
         String[] details;
+
         /* Check for "deadline", "deadline " */
         if (isPartsInvalid(parts)) {
             throw new MiffyException("Oops, the description and ending date/time of a deadline cannot be empty!\n"
-                    + Ui.DEADLINE_USAGE);
+                    + AddDeadlineCommand.DEADLINE_USAGE);
         }
 
         /* Split task contents into <description> and <due date> */
@@ -132,20 +170,22 @@ public class Parser {
     }
 
     private static String[] getEventDetails(String[] parts) throws MiffyException {
+        String[] details;
+
         /* Check for "event", "event " */
         if (isPartsInvalid(parts)) {
             throw new MiffyException(
                     "Oops, the event description, start date/time and end date/time cannot be empty!\n"
-                            + Ui.EVENT_USAGE);
+                            + AddEventCommand.EVENT_USAGE);
         }
 
-        String[] details = parts[1].split("\\s+/from\\s+|\\s+/to\\s+");
+        details = parts[1].split("\\s+/from\\s+|\\s+/to\\s+");
         return details;
     }
 
     private static void validateEventDetails(String[] details) throws MiffyException {
         if (details.length < 3) {
-            throw new MiffyException("Invalid input format! " + Ui.EVENT_USAGE);
+            throw new MiffyException("Oops! " + AddEventCommand.EVENT_USAGE);
         }
 
         if (details[0].isBlank() || details[1].isBlank() || details[2].isBlank()) {
@@ -157,7 +197,7 @@ public class Parser {
     private static Command getMarkOrDeleteCommand(String[] parts, String commandType) throws MiffyException {
         if (isPartsInvalid(parts)) {
             throw new MiffyException(
-                    "Please specify which task to %s. Usage: %s <index>".formatted(commandType, commandType));
+                    "Oops! Please specify which task to %s. Usage: %s <index>".formatted(commandType, commandType));
         }
 
         if (parts.length > 2) {
@@ -171,7 +211,7 @@ public class Parser {
         case "mark" -> new MarkCommand(zeroBasedIndex);
         case "unmark" -> new UnmarkCommand(zeroBasedIndex);
         case "delete" -> new DeleteCommand(zeroBasedIndex);
-        default -> throw new MiffyException("Unknown command: " + commandType);
+        default -> throw new MiffyException("Oops! Unknown command: " + commandType);
         };
     }
 
@@ -180,7 +220,8 @@ public class Parser {
             int userIndex = Integer.parseInt(input);
             return userIndex - 1;
         } catch (NumberFormatException e) {
-            throw new MiffyException("Please enter a valid task number. Usage: %s <index>".formatted(commandType));
+            throw new MiffyException(
+                    "Oops! Please enter a valid task number. Usage: %s <index>".formatted(commandType));
         }
     }
 
@@ -188,7 +229,7 @@ public class Parser {
         try {
             return LocalDateTime.parse(dateTimeString, INPUT_FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new MiffyException("Invalid date format! Please use yyyy-MM-dd HHmm (e.g. 2026-01-16 1800)");
+            throw new MiffyException(MESSAGE_DATE_FORMAT);
         }
     }
 
