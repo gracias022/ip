@@ -85,7 +85,7 @@ public class Miffy {
             return ui.getLastMessage();
         } catch (MiffyException e) {
             commandType = "Error";
-            return "Error: " + e.getMessage();
+            return e.getMessage();
         }
     }
 

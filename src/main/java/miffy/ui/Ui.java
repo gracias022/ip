@@ -1,8 +1,10 @@
 package miffy.ui;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Scanner;
 
+import miffy.command.CommandType;
 import miffy.task.Task;
 
 /**
@@ -11,14 +13,6 @@ import miffy.task.Task;
  * Provides methods to display messages, read input, and print task lists.
  */
 public class Ui {
-    public static final String DEADLINE_USAGE =
-            "Usage: deadline <desc> /by <yyyy-MM-dd HHmm>\n"
-                    + "E.g. deadline return book /by 2026-01-16 1800";
-
-    public static final String EVENT_USAGE =
-            "Usage: event <desc> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>\n"
-                    + "E.g. event meeting /from 2026-01-16 1400 /to 2026-01-16 1600";
-
     private static final String INDENT = "  ";
 
     private final Scanner scanner;
@@ -67,7 +61,7 @@ public class Ui {
      * Prints a message when loading tasks from storage fails.
      */
     public void showLoadingError() {
-        lastMessage = "Oops! I had trouble loading your saved tasks.\n\"We'll start fresh for now.";
+        lastMessage = "Oops! I had trouble loading your saved tasks.\nWe'll start fresh for now.";
         System.out.println(lastMessage);
     }
 
@@ -117,7 +111,7 @@ public class Ui {
     }
 
     /**
-     * Prints a confirmation message after a task has been marked or unmarked.
+     * Displays a confirmation message after a task has been marked or unmarked.
      *
      * @param task Task whose completion status has changed.
      */
@@ -126,6 +120,59 @@ public class Ui {
                 : "OK, I've marked this as not done:";
         lastMessage = INDENT + message + "\n  " + task;
         System.out.println(lastMessage);
+    }
+
+    /**
+     * Displays a confirmation message after a custom alias has been set.
+     *
+     * @param successMsg Success message.
+     * @param alias Alias set.
+     * @param command Command represented by the alias.
+     */
+    public void showAliasSet(String successMsg, String alias, String command) {
+        String message = String.format(successMsg, alias, command);
+        lastMessage = INDENT + message;
+        System.out.println(lastMessage);
+    }
+
+    /**
+     * Displays a list of aliases, showing custom aliases first
+     * followed by default aliases that are not overridden.
+     *
+     * @param custom Map containing user-defined alias-command mappings.
+     * @param defaults Map containing default alias-command mappings.
+     */
+    public void showAliases(Map<String, CommandType> custom, Map<String, CommandType> defaults) {
+        lastMessage = buildAliasList(custom, defaults);
+        System.out.println(lastMessage);
+    }
+
+    private String buildAliasList(Map<String, CommandType> custom, Map<String, CommandType> defaults) {
+        StringBuilder sb = new StringBuilder(INDENT + "Here are your aliases:\n");
+        sb.append(INDENT).append("─".repeat(20)).append("\n");
+
+        appendAliases(custom, defaults, sb);
+        return removeTrailingNewline(sb);
+    }
+
+    private static void appendAliases(
+            Map<String, CommandType> custom, Map<String, CommandType> defaults, StringBuilder sb) {
+        if (!custom.isEmpty()) {
+            sb.append(INDENT).append("Custom:\n");
+            custom.forEach((alias, cmd) ->
+                    sb.append(INDENT)
+                            .append(String.format("%-10s → %s\n", alias, cmd.name().toLowerCase()))
+            );
+            sb.append("\n");
+        }
+
+        sb.append(INDENT).append("Default:\n");
+        defaults.forEach((alias, cmd) -> {
+            if (!custom.containsKey(alias)) {
+                sb.append(INDENT)
+                        .append(String.format("%-10s → %s\n", alias, cmd.name().toLowerCase()));
+            }
+        });
     }
 
     /**
