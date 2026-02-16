@@ -24,9 +24,10 @@ public class Main extends Application {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
             AnchorPane ap = fxmlLoader.load();
-            Scene scene = new Scene(ap);
-            stage.setScene(scene);
 
+            Scene scene = new Scene(ap);
+            stage.setTitle("Miffy");
+            stage.setScene(scene);
             stage.setMinHeight(220);
             stage.setMinWidth(417);
 
