@@ -166,6 +166,12 @@ public class Parser {
         LocalDateTime fromDate = parseDateTime(from);
         LocalDateTime toDate = parseDateTime(to);
 
+        if (!fromDate.isBefore(toDate)) {
+            throw new MiffyException(
+                    "Oops, event start time must be before end time!"
+            );
+        }
+
         return new AddEventCommand(desc, fromDate, toDate);
     }
 
