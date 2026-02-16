@@ -49,7 +49,8 @@ public class CommandAlias {
         try {
             return CommandType.valueOf(lowercaseCommand.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new MiffyException("Sorry, I don't know what that means :(");
+            throw new MiffyException("Sorry, I don't know what that means :(\n"
+                    + "Type 'list' to view tasks or 'aliases' to see available shortcuts.");
         }
     }
 

@@ -29,11 +29,6 @@ public class MainWindow extends AnchorPane {
     private Image userImage = new Image(this.getClass().getResourceAsStream("/images/User.png"));
     private Image miffyImage = new Image(this.getClass().getResourceAsStream("/images/Miffy.png"));
 
-    @FXML
-    public void initialize() {
-        scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
-    }
-
     /** Injects the Duke instance */
     public void setMiffy(Miffy m) {
         miffy = m;
@@ -65,6 +60,9 @@ public class MainWindow extends AnchorPane {
             pause.setOnFinished(event -> Platform.exit());
             pause.play();
         }
+
+        // Autoscroll downwards after new messages have been added
+        Platform.runLater(() -> scrollPane.setVvalue(1.0));
     }
 }
 
