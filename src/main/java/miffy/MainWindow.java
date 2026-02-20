@@ -29,6 +29,19 @@ public class MainWindow extends AnchorPane {
     private Image userImage = new Image(this.getClass().getResourceAsStream("/images/User.png"));
     private Image miffyImage = new Image(this.getClass().getResourceAsStream("/images/Miffy.png"));
 
+    /**
+     * Initializes the controller. Sets up a listener on the {@code dialogContainer}
+     * height property to ensure the {@code scrollPane} automatically scrolls to the
+     * bottom whenever new messages are added and the layout is updated.
+     */
+    @FXML
+    public void initialize() {
+        // This listener triggers whenever the height of the container changes (new messages)
+        dialogContainer.heightProperty().addListener((observable, oldHeight, newHeight) -> {
+            scrollPane.setVvalue(1.0);
+        });
+    }
+
     /** Injects the Duke instance */
     public void setMiffy(Miffy m) {
         miffy = m;
@@ -60,9 +73,6 @@ public class MainWindow extends AnchorPane {
             pause.setOnFinished(event -> Platform.exit());
             pause.play();
         }
-
-        // Autoscroll downwards after new messages have been added
-        Platform.runLater(() -> scrollPane.setVvalue(1.0));
     }
 }
 
