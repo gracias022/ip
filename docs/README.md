@@ -4,7 +4,7 @@ Miffy is a lightweight task management application optimised for use via a Graph
 
 Miffy helps you manage your todos, deadlines and events, with features for task marking, search and deletion.
 
-## Quick start
+## Quick Start
 1. Ensure you have Java 17 or above installed in your Computer.\
 Mac users: Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 
@@ -12,8 +12,9 @@ Mac users: Ensure you have the precise JDK version prescribed [here](https://se-
 2. Download the latest .jar file from [here](https://github.com/gracias022/ip/releases/tag/A-Release). 
 
 
-3. Open a command terminal, `cd` into the folder you put the jar file in, and use the `java -jar miffy.jar` command to run the application.\
-A GUI similar to the below should appear in a few seconds. Note how the app contains some sample data.  
+3. Open a command terminal, `cd` into the folder you put the jar file in, and use the `java -jar miffy.jar` command to run the application.
+
+A GUI similar to the one shown below should appear in a few seconds. Note that upon startup, the chatbot displays a greeting message and awaits user input. The screenshot below shows an example interaction after several commands have been entered.
 
 <p align="center">
 <img src="./Ui.png" alt="Screenshot of Miffy GUI" height="1000">
